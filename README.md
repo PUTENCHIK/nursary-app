@@ -12,3 +12,12 @@
 
 ## users_router
 
+### Вход в учётную запись
+`/users/signin`\
+* Response
+```
+{
+&emsp;&emsp;login: "user123",
+&emsp;&emsp;password: "superuser",
+}
+```
