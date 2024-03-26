@@ -10,15 +10,39 @@
 `tasks(id, author_id, collar_id, template_id, is_done, is_deleted)` &emsp;// создаваемые пользователями задания, связанные с определёнными отслеживаемыми собаками. is_done устанавливает автор задания\
 `responses(id, author_id, task_id, image_path, is_deleted)`  &emsp;// таблица откликов пользователей на конкретные задания с указанием пути на фотоотчёт
 
+## Базовые формы запросов и ответов
+
+* Успешный запрос 
+```
+{
+    success: true,
+    exception: null
+}
+```
+* Проваленый запрос
+```
+{
+    success: false,
+    exception: "Exception description"
+}
+```
+
 ## users_router
 
 ### Вход в учётную запись
 `/users/signin`
 
-* Response
+* Request
 ```
 {
     login: "user123",
-    password: "superuser",
+    password: "superuser"
+}
+```
+* Response
+```
+{
+    success: true,
+    exception: null
 }
 ```
