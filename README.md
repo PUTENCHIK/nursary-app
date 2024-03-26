@@ -23,7 +23,11 @@
 ```
 {
     success: false,
-    exception: "Exception description"
+    exception: {
+        "message": "Exception description",
+        "code": 801
+    }
+
 }
 ```
 
