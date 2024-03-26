@@ -24,8 +24,8 @@
 {
     success: false,
     exception: {
-        "message": "Exception description",
-        "code": 801
+        message: "Exception description",
+        code: 801
     }
 
 }
@@ -36,19 +36,23 @@
 ### Вход в учётную запись
 `/users/signin`
 
-* Request
+* Запрос
+```
+{
+    login: "user123",
+    password: "superuser"
+}
+* Базовый ответ
+
+### Регистрация новой учётной записи
+`/users/signup`
+
+* Запрос
 ```
 {
     login: "user123",
     password: "superuser"
 }
 ```
-* Response
-* * Успешный ответ
-  * 
-```
-{
-    success: true,
-    exception: null
-}
-```
+* Базовый ответ
+
