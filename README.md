@@ -44,6 +44,8 @@
 }
 ```
 * Response
+* * Успешный ответ
+  * 
 ```
 {
     success: true,
