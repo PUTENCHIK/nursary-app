@@ -58,7 +58,29 @@
 * Базовый ответ
 
 ### Удаление учётной записи
+`/users/delete`
 
-### Изменение пароля учётной записи
+* Запрос
+```
+{
+    login: "user123",
+    password: "superuser"
+}
+```
 
-##
+### Изменение логина и/или пароля учётной записи
+`/users/change`
+
+* Запрос
+```
+{
+    login: "user123",
+    password: "superuser",
+    new_login: "123user",
+    new_password: "password"
+}
+```
+
+## collars_router
+
+### 
