@@ -2,7 +2,7 @@
 
 ## Структура базы данных
 
-`users(id, login, password, is_deleted)`\
+`users(id, login, password, is_admin, is_deleted)` &emsp;// поле is_admin отражает то, есть ли у учётной записи дополнительные функции: работа с ошейниками и собаками\
 `collars(id, code)` &emsp;// таблица ошейники (только технические характеристики)\
 `exploits(id, collar_id, dog_id, start_exploit, end_exploit)` &emsp;// записи об отслеживаемых ошейниках, собаках с этими ошейниками и времеными рамками эксплуатации ошейников\
 `dogs(id, name, location)`\
@@ -27,7 +27,6 @@
         message: "Exception description",
         code: 801
     }
-
 }
 ```
 
@@ -46,13 +45,17 @@
 * Базовый ответ
 
 ### Регистрация новой учётной записи
+Если is_admin = true, то проверяется переданный токен с хешированным токеном приложения. Если токены совпадают, в БД новая учётная запись отмечается как админская.
+Если is_admin = false, то значение переданного токена не используется.
 `/users/signup`
 
 * Запрос
 ```
 {
     login: "user123",
-    password: "superuser"
+    password: "superuser",
+    is_admin: true,
+    token: "special_token"
 }
 ```
 * Базовый ответ
@@ -67,6 +70,7 @@
     password: "superuser"
 }
 ```
+* Базовый ответ
 
 ### Изменение логина и/или пароля учётной записи
 `/users/change`
@@ -80,7 +84,70 @@
     new_password: "password"
 }
 ```
+* Базовый ответ
 
 ## collars_router
 
-### 
+### Добавление в БД новой собаки
+Функция доступна только пользователям-админам.
+`/collars/add_dog`
+
+* Запрос
+```
+{
+    name: "Ralfy",
+    location: "Irkutsk",
+    login: "admin_login",
+    password: "admin_password"
+}
+```
+* Базовый ответ
+
+### Добавление в БД нового ошейника
+Функция доступна только пользователям-админам.
+`/collars/add_collar`
+
+* Запрос
+```
+{
+    code: "123abc456",
+    login: "admin_login",
+    password: "admin_password"
+}
+```
+* Базовый ответ
+
+### Привязка ошейника к определённой собаке
+Функция доступна только пользователям-админам.
+`/collars/link`
+
+* Запрос
+```
+{
+    collar_id: 123,
+    dog_id: 456,
+    login: "admin_login",
+    password: "admin_password"
+}
+```
+* Базовый ответ
+
+### Удаление собаки из БД
+Функция доступна только пользователям-админам.
+`/collars/remove_dog`
+
+* Запрос
+```
+{
+    dog_id: 123,
+    login: "admin_login",
+    password: "admin_password"
+}
+```
+* Базовый ответ
+
+
+
+
+
+
