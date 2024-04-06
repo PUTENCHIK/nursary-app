@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from database import BaseDBModel, engine
+from src.database import BaseDBModel, engine
 
-from users.router import user_router
+from src.users.router import user_router
 
 BaseDBModel.metadata.create_all(bind=engine)
 
