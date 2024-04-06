@@ -24,5 +24,11 @@ def create_user(db: Session, user: UserCreate) -> Optional[user_model]:
     return db.user
 
 
-def get_user(db: Session, id: int | None, login: str | None) -> Optional[user_model]:
-    pass
+def get_user(db: Session, id: int = None, login: str = None) -> Optional[user_model]:
+    if id is not None:
+        db_user = db.query(user_model).filter(user_model.id == id).first()
+        return db_user
+    if login is not None:
+        db_user = db.query(user_model).filter(user_model.login == login).first()
+        return db_user
+    return None
