@@ -1,4 +1,4 @@
-from UserBase import UserBase
+from src.users.schemas.UserBase import UserBase
 
 
 class User(UserBase):
