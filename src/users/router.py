@@ -15,7 +15,7 @@ user_router = APIRouter()
 
 @user_router.post("/users/signup", response_model=User)
 def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
-    if get_user(user.login, db):
+    if get_db_user(db, login=user.login):
         raise HTTPException(status_code=404, detail=f"User with login '{user.login}' is already exists.")
     return create_db_user(db, user)
 
