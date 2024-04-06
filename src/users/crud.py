@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from src.users.models.User import User as user_model
+from models.User import User as user_model
 # from schemas.User import User as user_schema
-from src.users.schemas.UserCreate import UserCreate
+from schemas.UserCreate import UserCreate
 # from schemas.UserBase import UserBase
 
 

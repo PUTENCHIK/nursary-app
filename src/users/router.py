@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from src.database import DBSession
 from src.dependencies import get_db_session
-from src.users.schemas.User import User
-from src.users.schemas.UserCreate import UserCreate
-from src.users.crud import (
+from schemas.User import User
+from schemas.UserCreate import UserCreate
+from crud import (
     create_user as create_db_user,
     get_user as get_db_user
 )
