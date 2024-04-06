@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
+from main import special_token as app_token
 from src.database import DBSession
 from src.dependencies import get_db_session
 from src.users.schemas.User import User
@@ -17,6 +18,10 @@ user_router = APIRouter()
 def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
     if get_db_user(db, login=user.login):
         raise HTTPException(status_code=404, detail=f"User with login '{user.login}' is already exists.")
+
+    if user.special_token is not None and user.special_token != app_token():
+        raise HTTPException(status_code=404, detail=f"Entered wrong admin-token.")
+
     return create_db_user(db, user)
 
 
