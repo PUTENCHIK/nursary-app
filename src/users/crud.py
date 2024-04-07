@@ -1,16 +1,15 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from src.users.models.User import User as user_model
-# from schemas.User import User as user_schema
+from src.users.models.User import User as UserModel
+from src.users.schemas.UserPassword import UserPassword
 from src.users.schemas.UserCreate import UserCreate
-# from schemas.UserBase import UserBase
 
 
-def create_user(db: Session, user: UserCreate) -> Optional[user_model]:
+def create_user(db: Session, user: UserCreate) -> Optional[UserModel]:
     pwd = user.password[::-1]       # пока что по приколу меняем пароль
 
-    db.user = user_model(
+    db.user = UserModel(
         login=user.login,
         password=pwd,
         is_admin=(user.special_token is not None),
@@ -24,11 +23,23 @@ def create_user(db: Session, user: UserCreate) -> Optional[user_model]:
     return db.user
 
 
-def get_user(db: Session, id: int = None, login: str = None) -> Optional[user_model]:
+def signin_user(user: UserPassword, user_db: UserModel) -> bool:
+    pwd = user.password[::-1]
+
+    return pwd == user_db.password
+
+
+def remove_user(db: Session, user: UserPassword) -> bool:
+    db_user = get_user(db, login=user.login)
+    db_user.is_deleted = True
+    return True
+
+
+def get_user(db: Session, id: int = None, login: str = None) -> Optional[UserModel]:
     if id is not None:
-        db_user = db.query(user_model).filter(user_model.id == id).first()
+        db_user = db.query(UserModel).filter(UserModel.id == id).first()
         return db_user
     if login is not None:
-        db_user = db.query(user_model).filter(user_model.login == login).first()
+        db_user = db.query(UserModel).filter(UserModel.login == login).first()
         return db_user
     return None

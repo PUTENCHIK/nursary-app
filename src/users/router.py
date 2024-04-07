@@ -5,8 +5,10 @@ from src.database import DBSession
 from src.dependencies import get_db_session
 from src.users.schemas.User import User
 from src.users.schemas.UserCreate import UserCreate
+from src.users.schemas.UserPassword import UserPassword
 from src.users.crud import (
     create_user as create_db_user,
+    signin_user as signin_db_user,
     get_user as get_db_user
 )
 
@@ -23,6 +25,19 @@ def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
         raise HTTPException(status_code=404, detail=f"Entered wrong admin-token.")
 
     return create_db_user(db, user)
+
+
+@user_router.post("/users/signin", response_model=bool)
+def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+    user_db = get_user(user.login, db)
+
+    return signin_db_user(user, user_db)
+
+
+@user_router.post("/users/remove", response_model=bool)
+def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+    user_db = get_user(user.login, db)
+
 
 
 @user_router.get("/users/get", response_model=User)
