@@ -6,12 +6,12 @@
 
 ```
 users(
-  id,
-  login,
-  password,
-  token,
-  is_admin,
-  is_deleted
+  id INT unsigned not null auto_increment primary key,&emsp;&emsp;&emsp;//
+  login VARCHAR(255) not null unique,&emsp;&emsp;&emsp;//
+  password VARCHAR(255) not null,&emsp;&emsp;&emsp;//
+  token VARCHAR(255) not null unique,&emsp;&emsp;&emsp;//
+  is_admin BOOLEAN not null default 0,&emsp;&emsp;&emsp;//
+  is_deleted BOOLEAN not null default&emsp;&emsp;&emsp;//
 )
 ```
 &emsp;// поле is_admin отражает то, есть ли у учётной записи дополнительные функции: работа с ошейниками и собакам
