@@ -6,12 +6,12 @@
 
 ```
 users(
-  id INT unsigned not null auto_increment primary key,          //
-  login VARCHAR(255) not null unique,&emsp;&emsp;&emsp;//
-  password VARCHAR(255) not null,&emsp;&emsp;&emsp;//
-  token VARCHAR(255) not null unique,&emsp;&emsp;&emsp;//
-  is_admin BOOLEAN not null default 0,&emsp;&emsp;&emsp;//
-  is_deleted BOOLEAN not null default&emsp;&emsp;&emsp;//
+    id INT unsigned not null auto_increment primary key,        // уникальное id пользователя
+    login VARCHAR(255) not null unique,                         // уникальный логин пользователя в нижнем регистре
+    password VARCHAR(255) not null,                             // хешированный пароль пользователя
+    token VARCHAR(255) not null unique,                         // уникальный токен пользвателя, использующийся для подтверждения действий в приложении
+    is_admin BOOLEAN not null default 0,                        // 
+    is_deleted BOOLEAN not null default                         //
 )
 ```
 &emsp;// поле is_admin отражает то, есть ли у учётной записи дополнительные функции: работа с ошейниками и собакам
