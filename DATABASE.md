@@ -4,7 +4,7 @@
 
 ### users
 
-```mysql
+```sql
 users(
     id INT unsigned not null auto_increment primary key,        // уникальное id пользователя
     login VARCHAR(255) not null unique,                         // уникальный логин пользователя в нижнем регистре
@@ -19,7 +19,7 @@ users(
 
 ```sql
 collars(
-    id INT unsigned not null auto_increment primary key,        // уникальное id ошеейника
+    id INT unsigned not null auto_increment primary key,        // уникальное id ошейника
     code VARCHAR(255)                                           // заводской код ошейника
     is_deleted BOOLEAN not null default 0                       // мягкое удаление записи из БД
 )
@@ -27,22 +27,59 @@ collars(
 
 ### exploits
 
-`exploits(id, collar_id, dog_id, start_exploit, end_exploit)` &emsp;// записи об отслеживаемых ошейниках, собаках с этими ошейниками и времеными рамками эксплуатации ошейников
+```sql
+exploits(
+    id INT unsigned not null auto_increment primary key,        // уникальное id записи эксплуатации
+    collar_id INT unsigned not null,                            // id ошейника, который "отдали" определённой собаке
+    dog_id INT unsigned not null,                               // id собаки, которой "отдали" ошейник на время эксплуатации
+    start_exploit DATETIME not null,                            // дата и время начала эксплуатации ошейника (по умолчанию - время добавление записи в БД)
+    end_exploit DATETIME default null                           // дата и время конца эксплуатации ошейника (по умолчанию - null, меняется на дату и время при "передаче" ошейника другой собаке)
+)
+```
 
 ### dogs
 
-`dogs(id, name, location)`
+```sql
+dogs(
+    id INT unsigned not null auto_increment primary key,        // уникальное id собаки
+    name VARCHAR(255) not null,                                 // кличка собаки
+    location VARCHAR(255) not null default "Unknown",           // уточнение об известном месте обитания собаки
+    is_deleted BOOLEAN not null default 0                       // мягкое удаление записи из БД
+)
+```
 
 ### task_templates
 
-`task_templates(id, text, id_deleted)` &emsp;// предопределённые задания для пользователей (может редактировать только админ)
+```sql
+task_templates(
+    id INT unsigned not null auto_increment primary key,        // уникальное id шаблона задания
+    text MEDIUMTEXT not null,                                   // текстовое описание шаблона задания
+    is_deleted BOOLEAN not null default 0                       // мягкое удаление записи из БД
+)
+```
 
 ### tasks
 
-`tasks(id, author_id, collar_id, template_id, is_done, is_deleted)` &emsp;// создаваемые пользователями задания, связанные с определёнными отслеживаемыми собаками. is_done устанавливает автор задания
+```
+tasks(
+    id INT unsigned not null auto_increment primary key,        // уникальное id задания
+    author_id INT unsigned not null,                            // id автора задания
+    collar_id INT unsigned not null,                            // id ошейника собаки, к которой относится задание
+    template_id INT unsigned not null,                          // id шаблона задания
+    is_done BOOLEAN not null default 0,                         // выполнено ли задание (при добавлении записи в БД is_done равно false, автор задания может пометить задание как выполнено только отдельным запросом) 
+    is_deleted BOOLEAN not null default 0                       // мягкое удаление записи из БД
+)
+```
 
 ### responses
 
-`responses(id, author_id, task_id, image_path, is_deleted)`  &emsp;// таблица откликов пользователей на конкретные задания с указанием пути на фотоотчёт
+```sql
+responses(
+    id INT unsigned not null auto_increment primary key,        // уникальное id задания
+    author_id INT unsigned not null,                            // id пользователя, 
+    task_id,
+    image_path,
+    is_deleted
+)
+```
 
-## Описание таблиц и их полей
