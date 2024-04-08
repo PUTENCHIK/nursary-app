@@ -4,21 +4,26 @@
 
 ### users
 
-```
+```sql
 users(
     id INT unsigned not null auto_increment primary key,        // уникальное id пользователя
     login VARCHAR(255) not null unique,                         // уникальный логин пользователя в нижнем регистре
     password VARCHAR(255) not null,                             // хешированный пароль пользователя
     token VARCHAR(255) not null unique,                         // уникальный токен пользвателя, использующийся для подтверждения действий в приложении
-    is_admin BOOLEAN not null default 0,                        // 
-    is_deleted BOOLEAN not null default                         //
+    is_admin BOOLEAN not null default 0,                        // если true, то пользователю доступны все функции приложения, если же false, то только авторизация и функции, связанные с заданиями
+    is_deleted BOOLEAN not null default 0                       // мягкое удаление записи из БД
 )
 ```
-&emsp;// поле is_admin отражает то, есть ли у учётной записи дополнительные функции: работа с ошейниками и собакам
 
 ### collars
 
-`collars(id, code)` &emsp;// таблица ошейники (только технические характеристики)
+```sql
+collars(
+    id INT unsigned not null auto_increment primary key,        // уникальное id ошеейника
+    code VARCHAR(255)                                           // заводской код ошейника
+    is_deleted BOOLEAN not null default 0                       // мягкое удаление записи из БД
+)
+```
 
 ### exploits
 
