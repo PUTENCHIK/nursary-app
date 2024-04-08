@@ -6,7 +6,7 @@
 
 ```
 users(
-  id INT unsigned not null auto_increment primary key,&emsp;&emsp;&emsp;//
+  id INT unsigned not null auto_increment primary key, &emsp;&emsp;&emsp;//
   login VARCHAR(255) not null unique,&emsp;&emsp;&emsp;//
   password VARCHAR(255) not null,&emsp;&emsp;&emsp;//
   token VARCHAR(255) not null unique,&emsp;&emsp;&emsp;//
