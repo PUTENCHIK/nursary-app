@@ -5,7 +5,7 @@
 ### users
 
 ```sql
-users(
+`users`(
     id INT unsigned not null auto_increment primary key,        // уникальное id пользователя
     login VARCHAR(255) not null unique,                         // уникальный логин пользователя в нижнем регистре
     password VARCHAR(255) not null,                             // хешированный пароль пользователя
