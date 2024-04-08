@@ -32,7 +32,15 @@
     password: "superuser"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    id: 100,
+    login: "user123",
+    token: "abc123",
+    is_admin: false
+}
+```
 
 ### Регистрация новой учётной записи
 Если is_admin = true, то проверяется переданный токен с хешированным токеном приложения. Если токены совпадают, в БД новая учётная запись отмечается как админская.
@@ -47,10 +55,18 @@
     login: "user123",
     password: "superuser",
     is_admin: true,
-    token: "special_token"
+    admin_token: "admin_token"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    id: 100,
+    login: "user123",
+    token: "abc123",
+    is_admin: false
+}
+```
 
 ### Удаление учётной записи
 `/users/remove`
@@ -62,7 +78,9 @@
     password: "superuser"
 }
 ```
-* Базовый ответ
+{
+    success: true
+}
 
 ### Изменение логина и/или пароля учётной записи
 `/users/change`
@@ -76,7 +94,18 @@
     new_password: "password"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    id: 101,
+    login: "123user",
+    token: "def456",
+    is_admin: false
+}
+```
+
+
+
 
 ## collars_router
 Все функции из этого роутера доступны только пользователям-админам.
