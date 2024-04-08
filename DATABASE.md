@@ -5,7 +5,7 @@
 ### users
 
 ```sql
-`users`(
+users(
     id INT unsigned not null auto_increment primary key,        // уникальное id пользователя
     login VARCHAR(255) not null unique,                         // уникальный логин пользователя в нижнем регистре
     password VARCHAR(255) not null,                             // хешированный пароль пользователя
@@ -76,10 +76,10 @@ tasks(
 ```sql
 responses(
     id INT unsigned not null auto_increment primary key,        // уникальное id задания
-    author_id INT unsigned not null,                            // id пользователя, 
-    task_id,
-    image_path,
-    is_deleted
+    author_id INT unsigned not null,                            // id пользователя, выполнившего задание
+    task_id INT not null,                                       // id шаблона задания 
+    image_path VARCHAR(255) not null default "stock.png",       // путь к изображению, загруженного пользователем как подтвеждение ответа
+    is_deleted BOOLEAN not null default 0                       // мягкое удаление записи из БД
 )
 ```
 
