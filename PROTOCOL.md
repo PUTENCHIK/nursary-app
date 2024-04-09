@@ -78,9 +78,12 @@
     password: "superuser"
 }
 ```
+* Ответ
+```
 {
     success: true
 }
+```
 
 ### Изменение логина и/или пароля учётной записи
 `/users/change`
