@@ -10,6 +10,7 @@ from src.users.schemas.User import User
 from src.users.schemas.UserToken import UserToken
 from src.users.schemas.UserCreate import UserCreate
 from src.users.schemas.UserPassword import UserPassword
+from src.users.schemas.UserChange import UserChange
 from src.users.crud import (
     create_user as create_db_user,
     signin_user as signin_db_user,
@@ -59,10 +60,13 @@ def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
     return remove_db_user(user_db)
 
 
-@user_router.post(f"{router_name}/change")
-def change_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+@user_router.post(f"{router_name}/change", response_model=User)
+def change_user(user: UserChange, db: DBSession = Depends(get_db_session)):
     user_db = get_user(user.login, db)
+    if not signin_db_user(user, user_db):
+        raise UserException.wrong_password(user.login)
     pass
+
 
 
 @user_router.get(f"{router_name}/get", response_model=User)
