@@ -35,6 +35,10 @@ def remove_user(user: UserModel) -> bool:
     return user.is_deleted
 
 
+def change_user_fields(user: UserModel) -> UserModel:
+
+
+
 def get_user(db: Session, id: int = None, login: str = None, token: str = None) -> Optional[UserModel]:
     db_user = None
     if id is not None:
