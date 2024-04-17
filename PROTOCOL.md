@@ -121,11 +121,15 @@
 {
     name: "Ralfy",
     location: "Irkutsk",
-    login: "admin_login",
-    password: "admin_password"
+    user_token: "QWE123RTY"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    dog_id: 123
+}
+```
 
 ### Добавление в БД нового ошейника
 `/collars/add_collar`
@@ -134,11 +138,15 @@
 ```
 {
     code: "123abc456",
-    login: "admin_login",
-    password: "admin_password"
+    user_token: "QWE123RTY"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    collar_id: 123
+}
+```
 
 ### Привязка ошейника к определённой собаке
 `/collars/link`
@@ -148,11 +156,16 @@
 {
     collar_id: 123,
     dog_id: 456,
-    login: "admin_login",
-    password: "admin_password"
+    user_token: "QWE123RTY"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    collar_id: 123,
+    dog_id: 456
+}
+```
 
 ### Удаление собаки из БД
 `/collars/remove_dog`
@@ -160,12 +173,16 @@
 * Запрос
 ```
 {
-    dog_id: 123,
-    login: "admin_login",
-    password: "admin_password"
+    dog_id: 456,
+    user_token: "QWE123RTY"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    dog_id: 456
+}
+```
 
 ### Удаление ошейника из БД
 `/collars/remove_collar`
@@ -173,12 +190,16 @@
 * Запрос
 ```
 {
-    collar_id: 123,
-    login: "admin_login",
-    password: "admin_password"
+    collar_id: 456,
+    user_token: "QWE123RTY"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    collar_id: 456
+}
+```
 
 ### Отвязка ошейника от определённой собаке
 `/collars/unlink`
@@ -188,11 +209,16 @@
 {
     collar_id: 123,
     dog_id: 456,
-    login: "admin_login",
-    password: "admin_password"
+    user_token: "QWE123RTY"
 }
 ```
-* Базовый ответ
+* Ответ
+```
+{
+    collar_id: 123,
+    dog_id: 456
+}
+```
 
 ## tasks_router
 
@@ -205,8 +231,7 @@
 ```
 {
     text: "Всем привет, и сегодня вам нужно покормить 100 собак.",
-    login: "admin_login",
-    password: "admin_password"
+    user_token: "QWE123RTY"
 }
 ```
 * Базовый ответ
