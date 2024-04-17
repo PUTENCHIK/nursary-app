@@ -6,6 +6,7 @@ from src.users.models.User import User as UserModel
 from src.users.schemas.UserPassword import UserPassword
 from src.users.schemas.UserCreate import UserCreate
 from src.users.schemas.UserToken import UserToken
+from src.users.schemas.UserChange import UserChange
 
 
 def create_user(db: Session, user: UserCreate) -> Optional[UserModel]:
@@ -35,8 +36,11 @@ def remove_user(user: UserModel) -> bool:
     return user.is_deleted
 
 
-def change_user_fields(user: UserModel) -> UserModel:
+def change_user_fields(user: UserModel, new_fields: UserChange) -> UserModel:
+    user.login = new_fields.new_login
+    user.password = new_fields.new_password
 
+    return user
 
 
 def get_user(db: Session, id: int = None, login: str = None, token: str = None) -> Optional[UserModel]:
