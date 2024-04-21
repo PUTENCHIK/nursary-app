@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
 from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
 from secrets import token_hex
@@ -51,10 +50,10 @@ def change_user_fields(db: Session, user: UserModel, new_fields: UserChange) -> 
 def get_user(db: Session, id: int = None, login: str = None, token: str = None) -> Optional[UserModel]:
     db_user = None
     if id is not None:
-        db_user = db.query(UserModel).filter(and_(UserModel.id == id, UserModel.is_deleted == False)).first()
+        db_user = db.query(UserModel).filter_by(id=id, is_deleted=False).first()
     elif login is not None:
-        db_user = db.query(UserModel).filter(and_(UserModel.login == login, UserModel.is_deleted == False)).first()
+        db_user = db.query(UserModel).filter_by(login=login, is_deleted=False).first()
     elif token is not None:
-        db_user = db.query(UserModel).filter(and_(UserModel.token == token, UserModel.is_deleted == False)).first()
+        db_user = db.query(UserModel).filter_by(token=token, is_deleted=False).first()
 
     return db_user
