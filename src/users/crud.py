@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
+from secrets import token_hex
 
 from src.users.models.User import User as UserModel
 from src.users.schemas.UserPassword import UserPassword
@@ -13,9 +14,10 @@ def create_user(db: Session, user: UserCreate) -> Optional[UserModel]:
     pwd = generate_password_hash(user.password)
 
     db.user = UserModel(
-        login=user.login,
+        login=user.login.lower(),
         password=pwd,
-        is_admin=(user.admin_token is not None),
+        token=token_hex(8),
+        is_admin=(user.is_admin and user.admin_token is not None),
         is_deleted=False
     )
 
