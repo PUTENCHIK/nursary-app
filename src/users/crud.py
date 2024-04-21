@@ -10,13 +10,12 @@ from src.users.schemas.UserChange import UserChange
 
 
 def create_user(db: Session, user: UserCreate) -> Optional[UserModel]:
-    # pwd = user.password[::-1]       # пока что по приколу меняем пароль
     pwd = generate_password_hash(user.password)
 
     db.user = UserModel(
         login=user.login,
         password=pwd,
-        is_admin=(user.special_token is not None),
+        is_admin=(user.admin_token is not None),
         is_deleted=False
     )
 
