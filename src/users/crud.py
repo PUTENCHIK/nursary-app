@@ -50,10 +50,10 @@ def change_user_fields(db: Session, user: UserModel, new_fields: UserChange) -> 
 def get_user(db: Session, id: int = None, login: str = None, token: str = None) -> Optional[UserModel]:
     db_user = None
     if id is not None:
-        db_user = db.query(UserModel).filter(UserModel.id == id and not UserModel.is_deleted).first()
+        db_user = db.query(UserModel).filter(UserModel.id == id, not UserModel.is_deleted).first()
     elif login is not None:
-        db_user = db.query(UserModel).filter(UserModel.login == login and not UserModel.is_deleted).first()
+        db_user = db.query(UserModel).filter(UserModel.login == login, not UserModel.is_deleted).first()
     elif token is not None:
-        db_user = db.query(UserModel).filter(UserModel.token == token and not UserModel.is_deleted).first()
+        db_user = db.query(UserModel).filter(UserModel.token == token, not UserModel.is_deleted).first()
 
     return db_user
