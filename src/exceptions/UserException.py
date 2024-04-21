@@ -9,28 +9,27 @@ class UserException:
     @staticmethod
     def user_exists(login: str):
         return UserException.http(
-            code=1001,
-            # code=404,
+            code=404,
             detail=f"User with login '{login}' is already exists."
         )
 
     @staticmethod
     def wrong_admin_token(token: str):
         return UserException.http(
-            code=1002,
+            code=404,
             detail=f"Entered wrong admin-token '{token}'."
         )
 
     @staticmethod
     def wrong_password(login: str):
         return UserException.http(
-            code=1003,
+            code=404,
             detail=f"Entered wrong password for login '{login}'."
         )
 
     @staticmethod
     def no_user(login: str):
         return UserException.http(
-            code=1004,
+            code=404,
             detail=f"No user with login '{login}'."
         )
