@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from src.exceptions.UserException import UserException
 
@@ -70,6 +70,7 @@ def get_user(login: str, db: DBSession = Depends(get_db_session)):
     db_user = get_db_user(db, login=login)
 
     if db_user is None:
-        raise UserException.no_user(login)
+        raise HTTPException(status_code=1004, detail=f"No user with login '{login}'.")
+        # raise UserException.no_user(login)
 
     return db_user
