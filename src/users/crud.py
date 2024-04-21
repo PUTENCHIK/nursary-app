@@ -41,7 +41,7 @@ def remove_user(db: Session, user: UserModel) -> bool:
 
 def change_user_fields(db: Session, user: UserModel, new_fields: UserChange) -> UserModel:
     user.login = new_fields.new_login
-    user.password = new_fields.new_password
+    user.password = generate_password_hash(new_fields.new_password)
     db.commit()
 
     return user
