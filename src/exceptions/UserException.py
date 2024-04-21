@@ -1,11 +1,7 @@
-from fastapi import HTTPException
+from src.exceptions.MyHTTPException import MyHTTPException
 
 
-class UserException:
-    @staticmethod
-    def http(code: int, detail: str):
-        return HTTPException(status_code=code, detail=detail)
-
+class UserException(MyHTTPException):
     @staticmethod
     def user_exists(login: str):
         return UserException.http(
@@ -28,8 +24,15 @@ class UserException:
         )
 
     @staticmethod
-    def no_user(login: str):
+    def no_user(login: str = None, token: str = None):
         return UserException.http(
             code=404,
-            detail=f"No user with login '{login}'."
+            detail=f"No user with {'login' if token is None else 'token'} '{login if token is None else token}'."
+        )
+
+    @staticmethod
+    def is_not_admin(login: str = None, token: str = None):
+        return UserException.http(
+            code=404,
+            detail=f"User with {'login' if token is None else 'token'} '{login if token is None else token}' isn't admin"
         )

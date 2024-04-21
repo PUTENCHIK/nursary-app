@@ -6,6 +6,6 @@ class Dog(BaseDBModel):
     __tablename__ = "dogs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    login = Column(String, unique=False, index=False, default="Ralf")
+    name = Column(String, unique=False, index=False, default="Unknown")
     location = Column(String, unique=False, index=False, default="Unknown")
-    is_deleted = Column(Boolean, default=False, unique=False, index=False)
+    is_deleted = Column(Boolean, unique=False, index=False, default=False)
