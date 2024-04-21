@@ -23,7 +23,7 @@ router_name = "/users"
 
 
 @users_router.post(f"{router_name}/signup", response_model=UserToken)
-def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
+async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
     from main import special_token as app_token
 
     if get_db_user(db, login=user.login):
@@ -38,7 +38,7 @@ def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
 
 
 @users_router.post(f"{router_name}/signin", response_model=UserToken)
-def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+async def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
     user_db = get_user(user.login, db)
 
     if not signin_db_user(user, user_db):
@@ -49,7 +49,7 @@ def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
 
 
 @users_router.post(f"{router_name}/remove", response_model=bool)
-def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
     user_db = get_user(user.login, db)
 
     if not signin_db_user(user, user_db):
@@ -60,7 +60,7 @@ def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
 
 
 @users_router.post(f"{router_name}/change", response_model=UserToken)
-def change_user(user: UserChange, db: DBSession = Depends(get_db_session)):
+async def change_user(user: UserChange, db: DBSession = Depends(get_db_session)):
     user_db = get_user(user.login, db)
 
     if not signin_db_user(user, user_db):
