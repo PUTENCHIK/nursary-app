@@ -9,8 +9,8 @@ class UserException:
     @staticmethod
     def user_exists(login: str):
         return UserException.http(
-            # code=1001,
-            code=404,
+            code=1001,
+            # code=404,
             detail=f"User with login '{login}' is already exists."
         )
 
