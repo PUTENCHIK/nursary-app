@@ -27,8 +27,8 @@ async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session))
     from main import special_token as app_token
 
     if get_db_user(db, login=user.login):
-        raise HTTPException(status_code=404, detail=f"User with login '{user.login}' is already exists.")
-        # raise UserException.user_exists(user.login)
+        # raise HTTPException(status_code=404, detail=f"User with login '{user.login}' is already exists.")
+        raise UserException.user_exists(user.login)
 
     if user.is_admin and user.admin_token != app_token():
         raise HTTPException(status_code=404, detail=f"Entered wrong admin-token '{user.admin_token}'.")
