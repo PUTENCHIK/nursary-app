@@ -32,14 +32,17 @@ def signin_user(user: UserPassword, user_db: UserModel) -> bool:
     return check_password_hash(user_db.password, user.password)
 
 
-def remove_user(user: UserModel) -> bool:
+def remove_user(db: Session, user: UserModel) -> bool:
     user.is_deleted = True
+    db.commit()
+
     return user.is_deleted
 
 
-def change_user_fields(user: UserModel, new_fields: UserChange) -> UserModel:
+def change_user_fields(db: Session, user: UserModel, new_fields: UserChange) -> UserModel:
     user.login = new_fields.new_login
     user.password = new_fields.new_password
+    db.commit()
 
     return user
 

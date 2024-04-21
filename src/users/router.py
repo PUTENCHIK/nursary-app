@@ -56,7 +56,7 @@ async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session
         raise HTTPException(status_code=404, detail=f"Entered wrong password for login '{user.login}'.")
         # raise UserException.wrong_password(user.login)
 
-    return remove_db_user(user_db)
+    return remove_db_user(db, user_db)
 
 
 @users_router.post(f"{router_name}/change", response_model=UserToken)
@@ -67,7 +67,7 @@ async def change_user(user: UserChange, db: DBSession = Depends(get_db_session))
         raise HTTPException(status_code=404, detail=f"Entered wrong password for login '{user.login}'.")
         # raise UserException.wrong_password(user.login)
 
-    return change_user_fields(user_db, user)
+    return change_user_fields(db, user_db, user)
 
 
 @users_router.get(f"{router_name}/get", response_model=User)
