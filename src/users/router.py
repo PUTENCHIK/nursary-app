@@ -26,8 +26,8 @@ router_name = "/users"
 async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
     from main import special_token as app_token
 
-    if get_db_user(db, login=user.login):
-        raise UserException.user_exists(user.login)
+    if get_db_user(db, login=user.login.lower()):
+        raise UserException.user_exists(user.login.lower())
 
     if user.is_admin and user.admin_token != app_token():
         raise UserException.wrong_admin_token(user.admin_token)
@@ -37,30 +37,30 @@ async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session))
 
 @users_router.post(f"{router_name}/signin", response_model=UserToken)
 async def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
-    user_db = get_user(login=user.login, db=db)
+    user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
-        raise UserException.wrong_password(user.login)
+        raise UserException.wrong_password(user.login.lower())
 
     return user_db
 
 
 @users_router.post(f"{router_name}/remove", response_model=bool)
 async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
-    user_db = get_user(login=user.login, db=db)
+    user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
-        raise UserException.wrong_password(user.login)
+        raise UserException.wrong_password(user.login.lower())
 
     return remove_db_user(db, user_db)
 
 
 @users_router.post(f"{router_name}/change", response_model=UserToken)
 async def change_user(user: UserChange, db: DBSession = Depends(get_db_session)):
-    user_db = get_user(login=user.login, db=db)
+    user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
-        raise UserException.wrong_password(user.login)
+        raise UserException.wrong_password(user.login.lower())
 
     return change_user_fields(db, user_db, user)
 
@@ -75,7 +75,7 @@ def get_user(login: str = None, token: str = None, db: DBSession = Depends(get_d
     return db_user
 
 
-@users_router.get(f"{users_router}/is_admin", response_model=bool)
+@users_router.get(f"{router_name}/is_admin", response_model=bool)
 def is_user_admin(login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
     db_user = get_user(login, token, db)
 
