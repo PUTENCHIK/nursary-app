@@ -66,8 +66,8 @@ tasks(
 responses(
     id INT unsigned not null auto_increment primary key,        -- уникальное id задания
     author_id INT unsigned not null,                            -- id пользователя, выполнившего задание
-    task_id INT unsigned not null,                                       -- id шаблона задания 
-    image_path VARCHAR(255) not null default "stock.png",       -- путь к изображению, загруженного пользователем как подтвеждение ответа
+    task_id INT unsigned not null,                              -- id шаблона задания 
+    image_path VARCHAR(255) not null,                           -- путь к изображению, загруженного пользователем как подтвеждение ответа
     is_confirmed BOOLEAN not null default 0                     -- является ли ответ подтверждённым автором задания (одновременно может быть подтверждён только один ответ к каждому заданию)
     is_deleted BOOLEAN not null default 0                       -- мягкое удаление записи из БД
 )
