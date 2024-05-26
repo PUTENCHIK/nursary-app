@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, and_
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -44,6 +44,8 @@ def link(db: Session, link: Link) -> Optional[Exploit]:
     db.exploit = Exploit(
         collar_id=link.collar_id,
         dog_id=link.dog_id,
+        start_exploit=datetime.datetime.now(),
+        end_exploit=None
     )
 
     db.add(db.exploit)
@@ -82,8 +84,25 @@ def get_collar(db: Session, id: int) -> Optional[CollarModel]:
     return db.query(CollarModel).filter_by(id=id, is_deleted=False).first()
 
 
-def get_exploit(db: Session, collar_id: int, dog_id: int) -> Optional[Exploit]:
-    return db.query(Exploit).filter(Exploit.collar_id == collar_id,
-                                    Exploit.dog_id == dog_id).first()
-                                    # or_(Exploit.end_exploit is None,
-                                    #     func.date(Exploit.end_exploit) < datetime.datetime.now())).first()
+def get_exploit(db: Session, collar_id: int = None, dog_id: int = None) -> Optional[Exploit]:
+    db_exploit = None
+
+    if collar_id is not None and dog_id is not None:
+        db_exploit = db.query(Exploit).filter_by(
+            collar_id=collar_id,
+            dog_id=dog_id,
+            end_exploit=None,
+        ).first()
+    elif collar_id is not None:
+        db_exploit = db.query(Exploit).filter_by(
+            collar_id=collar_id,
+            end_exploit=None,
+        ).first()
+    elif dog_id is not None:
+        db_exploit = db.query(Exploit).filter_by(
+            dog_id=dog_id,
+            end_exploit=None,
+        ).first()
+
+    return db_exploit
+

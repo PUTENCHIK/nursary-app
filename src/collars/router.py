@@ -7,7 +7,7 @@ from src.exceptions.DogException import DogException
 from src.exceptions.CollarException import CollarException
 from src.exceptions.ExploitException import ExploitException
 
-from src.users.router import get_user, is_user_admin
+from src.users.router import is_user_admin
 
 from src.users.schemas.UserAuth import UserAuth
 
@@ -54,12 +54,24 @@ def add_collar(collar: CollarAdd, user: UserAuth, db: DBSession = Depends(get_db
 
 
 @collars_router.post(f"{router_name}/link", response_model=bool)
-def link_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(get_db_session)):
+async def link_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(get_db_session)):
     if is_user_admin(token=user.user_token, db=db):
-        db_dog = get_dog(link.dog_id, db)
-        db_collar = get_collar(link.collar_id, db)
+        get_dog(link.dog_id, db)
+        get_collar(link.collar_id, db)
 
-        db_exploit = add_link(db, link)
+        db_exploit = get_db_exploit(db, link.collar_id, link.dog_id)
+        if db_exploit is not None:
+            raise ExploitException.already_link(link.collar_id, link.dog_id)
+
+        db_collar_exploit = get_db_exploit(db, collar_id=link.collar_id)
+        if db_collar_exploit is not None:
+            raise ExploitException.collar_already_linked(db_collar_exploit.collar_id, db_collar_exploit.dog_id)
+
+        db_dog_exploit = get_db_exploit(db, dog_id=link.dog_id)
+        if db_dog_exploit is not None:
+            raise ExploitException.dog_already_linked(db_dog_exploit.dog_id, db_dog_exploit.collar_id)
+
+        add_link(db, link)
         return True
 
 
@@ -82,7 +94,12 @@ def remove_collar(collar: CollarBase, user: UserAuth, db: DBSession = Depends(ge
 @collars_router.post(f"{router_name}/unlink", response_model=bool)
 def unlink_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(get_db_session)):
     if is_user_admin(token=user.user_token, db=db):
+        get_dog(link.dog_id, db)
+        get_collar(link.collar_id, db)
+
         db_exploit = get_exploit(link.collar_id, link.dog_id, db)
+        if db_exploit is None:
+            ExploitException.no_exploit(link.collar_id, link.dog_id)
 
         return remove_link(db, db_exploit)
 
@@ -108,7 +125,10 @@ def get_collar(collar_id: int, db: DBSession = Depends(get_db_session)):
 
 
 @collars_router.get(f"{router_name}/get_link", response_model=Exploit)
-def get_exploit(collar_id: int, dog_id: int, db: DBSession = Depends(get_db_session)):
+def get_exploit(collar_id: int = None, dog_id: int = None, db: DBSession = Depends(get_db_session)):
+    if collar_id is None and dog_id is None:
+        raise ExploitException.no_both_ids()
+
     db_exploit = get_db_exploit(db, collar_id, dog_id)
 
     if db_exploit is None:
