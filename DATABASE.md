@@ -48,16 +48,6 @@ dogs(
 )
 ```
 
-### task_templates
-
-```sql
-task_templates(
-    id INT unsigned not null auto_increment primary key,        -- уникальное id шаблона задания
-    text MEDIUMTEXT not null,                                   -- текстовое описание шаблона задания
-    is_deleted BOOLEAN not null default 0                       -- мягкое удаление записи из БД
-)
-```
-
 ### tasks
 
 ```sql
@@ -65,8 +55,7 @@ tasks(
     id INT unsigned not null auto_increment primary key,        -- уникальное id задания
     author_id INT unsigned not null,                            -- id автора задания
     collar_id INT unsigned not null,                            -- id ошейника собаки, к которой относится задание
-    template_id INT unsigned not null,                          -- id шаблона задания
-    is_done BOOLEAN not null default 0,                         -- выполнено ли задание (при добавлении записи в БД is_done равно false, автор задания может пометить задание как выполнено только отдельным запросом) 
+    text MEDIUMTEXT not null,                                   -- текстовое описание шаблона задания
     is_deleted BOOLEAN not null default 0                       -- мягкое удаление записи из БД
 )
 ```
@@ -79,6 +68,7 @@ responses(
     author_id INT unsigned not null,                            -- id пользователя, выполнившего задание
     task_id INT not null,                                       -- id шаблона задания 
     image_path VARCHAR(255) not null default "stock.png",       -- путь к изображению, загруженного пользователем как подтвеждение ответа
+    is_confirmed BOOLEAN not null default 0                     -- является ли ответ подтверждённым автором задания (одновременно может быть подтверждён только один ответ к каждому заданию)
     is_deleted BOOLEAN not null default 0                       -- мягкое удаление записи из БД
 )
 ```
