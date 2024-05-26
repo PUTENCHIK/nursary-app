@@ -248,7 +248,7 @@
 * Запрос
 ```
 {
-    response_id: 321,
+    task_id: 321,
     image_path: https://host/images/answer.png,
     user_token: "QWE123RTY"
 }
