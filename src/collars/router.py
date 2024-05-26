@@ -80,6 +80,10 @@ def remove_dog(dog: DogBase, user: UserAuth, db: DBSession = Depends(get_db_sess
     if is_user_admin(token=user.user_token, db=db):
         db_dog = get_dog(dog.id, db)
 
+        db_exploit = get_db_exploit(db, dog_id=dog.id)
+        if db_exploit is not None:
+            remove_link(db, db_exploit)
+
         return remove_db_dog(db, db_dog)
 
 
@@ -87,6 +91,10 @@ def remove_dog(dog: DogBase, user: UserAuth, db: DBSession = Depends(get_db_sess
 def remove_collar(collar: CollarBase, user: UserAuth, db: DBSession = Depends(get_db_session)):
     if is_user_admin(token=user.user_token, db=db):
         db_collar = get_collar(collar.id, db)
+
+        db_exploit = get_db_exploit(db, collar_id=collar.id)
+        if db_exploit is not None:
+            remove_link(db, db_exploit)
 
         return remove_db_collar(db, db_collar)
 
