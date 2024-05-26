@@ -60,7 +60,7 @@ task_templates(
 
 ### tasks
 
-```
+```sql
 tasks(
     id INT unsigned not null auto_increment primary key,        -- уникальное id задания
     author_id INT unsigned not null,                            -- id автора задания
