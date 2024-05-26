@@ -56,6 +56,7 @@ tasks(
     author_id INT unsigned not null,                            -- id автора задания
     collar_id INT unsigned not null,                            -- id ошейника собаки, к которой относится задание
     text MEDIUMTEXT not null,                                   -- текстовое описание шаблона задания
+    created_at DATETIME not null,                               -- дата и время добавления задания
     is_deleted BOOLEAN not null default 0                       -- мягкое удаление записи из БД
 )
 ```
@@ -64,11 +65,13 @@ tasks(
 
 ```sql
 responses(
-    id INT unsigned not null auto_increment primary key,        -- уникальное id задания
-    author_id INT unsigned not null,                            -- id пользователя, выполнившего задание
-    task_id INT unsigned not null,                              -- id шаблона задания 
+    id INT unsigned not null auto_increment primary key,        -- уникальное id отклика
+    author_id INT unsigned not null,                            -- id пользователя, оставившего отклик
+    task_id INT unsigned not null,                              -- id задания 
     image_path VARCHAR(255) not null,                           -- путь к изображению, загруженного пользователем как подтвеждение ответа
-    is_confirmed BOOLEAN not null default 0                     -- является ли ответ подтверждённым автором задания (одновременно может быть подтверждён только один ответ к каждому заданию)
+    created_at DATETIME not null,                               -- дата и время добавления отклика
+    is_confirmed BOOLEAN not null default 0                     -- является ли отклик подтверждённым автором задания (одновременно может быть подтверждён только один отклик к каждому заданию)
+    confirmed_at DATETIME not null,                             -- дата и время подтверждения отклика
     is_deleted BOOLEAN not null default 0                       -- мягкое удаление записи из БД
 )
 ```
