@@ -162,8 +162,7 @@
 * Ответ
 ```
 {
-    collar_id: 123,
-    dog_id: 456
+    success: true
 }
 ```
 
@@ -180,7 +179,7 @@
 * Ответ
 ```
 {
-    dog_id: 456
+    success: true
 }
 ```
 
@@ -197,7 +196,7 @@
 * Ответ
 ```
 {
-    collar_id: 456
+    success: true
 }
 ```
 
@@ -215,8 +214,7 @@
 * Ответ
 ```
 {
-    collar_id: 123,
-    dog_id: 456
+    success: true
 }
 ```
 
