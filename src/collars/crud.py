@@ -1,6 +1,5 @@
 import datetime
 
-from sqlalchemy import or_, func, and_
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -105,4 +104,3 @@ def get_exploit(db: Session, collar_id: int = None, dog_id: int = None) -> Optio
         ).first()
 
     return db_exploit
-
