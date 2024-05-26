@@ -224,25 +224,6 @@
 
 ## tasks_router
 
-### Добавление нового шаблона заданий
-Функция доступна только пользователям-админам.
-
-`/tasks/add_template`
-
-* Запрос
-```
-{
-    text: "Всем привет, и сегодня вам нужно покормить 100 собак.",
-    user_token: "QWE123RTY"
-}
-```
-* Ответ
-```
-{
-    template_id: 102
-}
-```
-
 ### Добавление нового задания пользователем
 `/tasks/add_task`
 
@@ -250,7 +231,7 @@
 ```
 {
     collar_id: 321,
-    template_id: 101,
+    text: "Всем привет, и сегодня вам нужно будет собаку!",
     user_token: "QWE123RTY"
 }
 ```
@@ -258,5 +239,75 @@
 ```
 {
     task_id: 201
+}
+```
+
+### Размещение отклика на задание
+`/tasks/add_response`
+
+* Запрос
+```
+{
+    response_id: 321,
+    image_path: https://host/images/answer.png,
+    user_token: "QWE123RTY"
+}
+```
+* Ответ
+```
+{
+    response_id: 201
+}
+```
+
+### Подтверждение автором задания отклика на это задание
+`/tasks/confirm_response`
+
+* Запрос
+```
+{
+    response_id: 321,
+    user_token: "QWE123RTY"
+}
+```
+* Ответ
+```
+{
+    success: true
+}
+```
+
+### Удаление задания
+Пользователь может удалять задания, на которые ещё нет ни одного ответа
+`/tasks/remove_task`
+
+* Запрос
+```
+{
+    task_id: 321,
+    user_token: "QWE123RTY"
+}
+```
+* Ответ
+```
+{
+    success: true
+}
+```
+
+### Удаление отклика
+`/tasks/remove_response`
+
+* Запрос
+```
+{
+    response_id: 321,
+    user_token: "QWE123RTY"
+}
+```
+* Ответ
+```
+{
+    success: true
 }
 ```
