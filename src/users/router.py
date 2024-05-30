@@ -24,12 +24,12 @@ router_name = "/users"
 
 @users_router.post(f"{router_name}/signup", response_model=UserToken)
 async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
-    from main import special_token as app_token
+    from src.secret import check_admin_token
 
     if get_db_user(db, login=user.login.lower()):
         raise UserException.user_exists(user.login.lower())
 
-    if user.is_admin and user.admin_token != app_token():
+    if user.is_admin and not check_admin_token(user.admin_token):
         raise UserException.wrong_admin_token(user.admin_token)
 
     return create_db_user(db, user)

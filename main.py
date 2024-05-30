@@ -17,7 +17,3 @@ app.include_router(tasks_router)
 @app.get("/")
 def root_greet():
     return {"message": "Hello on nursery-app!"}
-
-
-def special_token():
-    return "toster123"
