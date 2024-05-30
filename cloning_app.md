@@ -35,9 +35,11 @@ cd nursery-app
 ```
 
 6. Запуск приложения:
+* С помощью Python-скрипта:
 ```python
 python3 run.py
 ```
+* Или используя uvicorn:
 ```bash
 sudo apt install uvicorn
 uvicorn main:app --reload --port 5000 --host 0.0.0.0
