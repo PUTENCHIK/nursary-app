@@ -1,4 +1,5 @@
 import datetime
+import random
 
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -104,3 +105,12 @@ def get_exploit(db: Session, collar_id: int = None, dog_id: int = None) -> Optio
         ).first()
 
     return db_exploit
+
+
+def get_random_coords(collar_code: str) -> tuple[float, float]:
+    min_lat, max_lat = -90, 90
+    min_lon, max_lon = -180, 180
+
+    lat = min_lat + (max_lat-min_lat) * random.random()
+    lon = min_lon + (max_lon-min_lon) * random.random()
+    return lat, lon
