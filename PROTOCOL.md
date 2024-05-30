@@ -1,25 +1,5 @@
 # Протокол приложения nursary-app
 
-## Базовые формы запросов и ответов
-
-* Успешный запрос 
-```
-{
-    success: true,
-    exception: null
-}
-```
-* Проваленый запрос
-```
-{
-    success: false,
-    exception: {
-        message: "Exception description",
-        code: 801
-    }
-}
-```
-
 ## users_router
 
 ### Вход в учётную запись
