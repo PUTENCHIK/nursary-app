@@ -36,3 +36,10 @@ class UserException(MyHTTPException):
             code=404,
             detail=f"User with {'login' if token is None else 'token'} '{login if token is None else token}' isn't admin"
         )
+
+    @staticmethod
+    def has_active_tasks(user_id: int, task_id: int):
+        return UserException.http(
+            code=404,
+            detail=f"User with id '{user_id}' has at least one active task with id '{task_id}', so he can't be removed"
+        )
