@@ -66,12 +66,28 @@ def get_task(db: Session, task_id: int) -> Optional[TaskModel]:
     return db.query(TaskModel).filter_by(id=task_id, is_deleted=False).first()
 
 
-def get_response(db: Session, response_id: int = None, task_id: int = None) -> Optional[ResponseModel]:
+def get_user_tasks(db: Session, author_id: int):
+    return db.query(TaskModel).filter_by(author_id=author_id).all()
+
+
+def get_response(db: Session,
+                 response_id: int = None,
+                 task_id: int = None,
+                 is_confirmed: bool = None) -> Optional[ResponseModel]:
     if response_id is not None:
         return db.query(ResponseModel).filter_by(id=response_id).first()
     elif task_id is not None:
-        return db.query(ResponseModel).filter_by(task_id=task_id).first()
+        if is_confirmed is None:
+            return db.query(ResponseModel).filter_by(task_id=task_id).first()
+        else:
+            return db.query(ResponseModel).filter_by(task_id=task_id, is_confirmed=is_confirmed).first()
 
 
 def get_confirmed_response(db: Session, task_id: int) -> Optional[ResponseModel]:
     return db.query(ResponseModel).filter_by(task_id=task_id, is_confirmed=True).first()
+
+
+def is_task_active(db: Session, task: TaskModel) -> bool:
+    db_response = get_response(db, task_id=task.id, is_confirmed=True)
+
+    return db_response is not None
