@@ -1,3 +1,5 @@
+import re
+
 from fastapi import APIRouter, Depends
 
 from src.database import DBSession
@@ -18,6 +20,7 @@ from src.collars.schemas.DogAdd import DogAdd
 from src.collars.schemas.Collar import Collar
 from src.collars.schemas.CollarBase import CollarBase
 from src.collars.schemas.CollarAdd import CollarAdd
+from src.collars.schemas.CollarCoords import CollarCoords
 
 from src.collars.schemas.Link import Link
 from src.collars.schemas.Exploit import Exploit
@@ -32,6 +35,7 @@ from src.collars.crud import (
     remove_dog as remove_db_dog,
     remove_collar as remove_db_collar,
     unlink as remove_link,
+    get_random_coords
 )
 
 
@@ -49,6 +53,12 @@ def add_dog(dog: DogAdd, user: UserAuth, db: DBSession = Depends(get_db_session)
 @collars_router.post(f"{router_name}/add_collar", response_model=CollarBase)
 def add_collar(collar: CollarAdd, user: UserAuth, db: DBSession = Depends(get_db_session)):
     if is_user_admin(token=user.user_token, db=db):
+        collar.code = collar.code.lower()
+        if len(collar.code) != 6:
+            raise CollarException.wrong_code_length()
+        if re.search(r'^([a-z0-9]{6})$', collar.code) is None:
+            raise CollarException.wrong_code()
+
         db_collar = add_db_collar(db, collar)
         return db_collar
 
@@ -130,6 +140,21 @@ def get_collar(collar_id: int, db: DBSession = Depends(get_db_session)):
         raise CollarException.no_collar(id=collar_id)
 
     return db_collar
+
+
+@collars_router.get(f"{router_name}/get_coords")
+def get_coords(collar_id: int, db: DBSession = Depends(get_db_session)):
+    db_collar = get_collar(collar_id, db)
+    db_exploit = get_exploit(collar_id=collar_id, db=db)
+    if db_exploit is None:
+        raise CollarException.cant_get_coords(collar_id)
+
+    coords = get_random_coords(db_collar.code)
+
+    return {
+        "latitude": coords[0],
+        "longitude": coords[1],
+    }
 
 
 @collars_router.get(f"{router_name}/get_link", response_model=Exploit)
