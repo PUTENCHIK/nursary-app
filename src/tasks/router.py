@@ -26,6 +26,7 @@ from src.tasks.crud import (
     remove_task as remove_db_task,
     remove_response as remove_db_response,
     get_task as get_db_task,
+    get_user_tasks,
     get_response as get_db_response,
     get_confirmed_response
 )
@@ -109,6 +110,11 @@ def get_task(task_id: int, db: DBSession = Depends(get_db_session)):
         raise TaskException.no_task(task_id)
 
     return db_task
+
+
+@tasks_router.get(f"{router_name}/get_tasks", response_model=list[Task])
+def get_tasks(author_id: int, db: DBSession = Depends(get_db_session)):
+    return get_user_tasks(db, author_id)
 
 
 @tasks_router.get(f"{router_name}/get_response", response_model=Response)
