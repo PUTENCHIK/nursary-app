@@ -33,3 +33,12 @@ pip install -U Werkzeug
 git clone -b master https://github.com/PUTENCHIK/nursery-app.git
 cd nursery-app
 ```
+
+6. Запуск приложения:
+```python
+python3 run.py
+```
+```bash
+sudo apt install uvicorn
+uvicorn main:app --reload --port 5000 --host 0.0.0.0
+```
