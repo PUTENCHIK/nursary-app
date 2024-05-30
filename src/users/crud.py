@@ -6,7 +6,6 @@ from secrets import token_hex
 from src.users.models.User import User as UserModel
 from src.users.schemas.UserPassword import UserPassword
 from src.users.schemas.UserCreate import UserCreate
-from src.users.schemas.UserToken import UserToken
 from src.users.schemas.UserChange import UserChange
 
 

@@ -1,4 +1,3 @@
-import pkg_resources
 from fastapi import APIRouter, Depends
 
 from src.database import DBSession
