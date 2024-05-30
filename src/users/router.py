@@ -47,10 +47,19 @@ async def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session
 
 @users_router.post(f"{router_name}/remove", response_model=bool)
 async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+    from src.tasks.router import get_tasks
+    from src.tasks.crud import is_task_active
+
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
         raise UserException.wrong_password(user.login.lower())
+
+    db_tasks = get_tasks(user_db.id, db)
+
+    for task in db_tasks:
+        if is_task_active(db, task):
+            raise UserException.has_active_tasks(user_db.id, task.id)
 
     return remove_db_user(db, user_db)
 
