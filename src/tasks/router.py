@@ -37,6 +37,21 @@ router_name = "/tasks"
 
 @tasks_router.post(f"{router_name}/add_task", response_model=TaskBase)
 def add_task(task: TaskAdd, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks task schema and if it's valid, will add task to db.
+
+    :param task: schema which contains collar_id and text of task
+    :type task: TaskAdd
+
+    :param user: schema which contains user's token for authentication
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :raises UserException:
+    :raises TaskException:
+    """
     db_user = get_user(token=user.user_token, db=db)
     db_exploit = get_exploit(db, collar_id=task.collar_id)
 
@@ -51,6 +66,22 @@ def add_task(task: TaskAdd, user: UserAuth, db: DBSession = Depends(get_db_sessi
 
 @tasks_router.post(f"{router_name}/add_response", response_model=ResponseBase)
 def add_response(response: ResponseAdd, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks response schema and if it's valid, will add response to db.
+
+    :param response: schema which contains task_id and path to confirming image
+    :type response: ResponseAdd
+
+    :param user: schema which contains user's token for authentication
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :raises UserException:
+    :raises TaskException:
+    :raises ResponseException:
+    """
     db_user = get_user(token=user.user_token, db=db)
     get_task(response.task_id, db)
 
@@ -59,6 +90,23 @@ def add_response(response: ResponseAdd, user: UserAuth, db: DBSession = Depends(
 
 @tasks_router.post(f"{router_name}/confirm_response", response_model=bool)
 def confirm_response(response: ResponseBase, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    If response exists and user is author of linked task and task hasn't had other confirmed responses,
+    response will become confirmed.
+
+    :param response: schema which contains response's id
+    :type response: ResponseBase
+
+    :param user: schema which contains user's token for authentication
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :raises UserException:
+    :raises ResponseException:
+    :raises TaskException:
+    """
     db_user = get_user(token=user.user_token, db=db)
     db_response = get_response(response.id, db)
     db_task = get_task(db_response.task_id, db)
@@ -78,6 +126,21 @@ def confirm_response(response: ResponseBase, user: UserAuth, db: DBSession = Dep
 
 @tasks_router.post(f"{router_name}/remove_task", response_model=bool)
 def remove_task(task: TaskBase, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    If task exists and user is author of task and task hasn't responses, task will be noted as deleted.
+
+    :param task: schema with task's id
+    :type task: TaskBase
+
+    :param user: schema which contains user's token for authentication
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :raises UserException:
+    :raises TaskException:
+    """
     db_user = get_user(token=user.user_token, db=db)
     db_task = get_task(task.id, db)
 
@@ -93,6 +156,21 @@ def remove_task(task: TaskBase, user: UserAuth, db: DBSession = Depends(get_db_s
 
 @tasks_router.post(f"{router_name}/remove_response", response_model=bool)
 def remove_response(response: ResponseBase, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+        If response exists and user is creator of response, response will be noted as deleted.
+
+        :param response: schema with response's id
+        :type response: ResponseBase
+
+        :param user: schema which contains user's token for authentication
+        :type user: UserAuth
+
+        :param db: session for connecting to db
+        :type db: sessionmaker
+
+        :raises UserException:
+        :raises ResponseException:
+        """
     db_user = get_user(token=user.user_token, db=db)
     db_response = get_response(response.id, db)
 
