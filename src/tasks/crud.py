@@ -3,11 +3,16 @@ import datetime
 from sqlalchemy.orm import Session
 from typing import Optional
 
+from src.dependencies import get_logger
+
 from src.tasks.models.Task import Task as TaskModel
 from src.tasks.models.Response import Response as ResponseModel
 
 from src.tasks.schemas.TaskAdd import TaskAdd
 from src.tasks.schemas.ResponseAdd import ResponseAdd
+
+
+logger = get_logger('tasks_crud')
 
 
 def add_task(db: Session, task: TaskAdd, user_id: int) -> Optional[TaskModel]:
@@ -24,8 +29,10 @@ def add_task(db: Session, task: TaskAdd, user_id: int) -> Optional[TaskModel]:
     :type user_id: int
 
     :return: new task model
-    :rtype: TaskModel
+    :rtype: TaskModel or None
     """
+    logger.add_debug("Adding task")
+
     db.task = TaskModel(
         author_id=user_id,
         collar_id=task.collar_id,
@@ -36,6 +43,8 @@ def add_task(db: Session, task: TaskAdd, user_id: int) -> Optional[TaskModel]:
     db.add(db.task)
     db.commit()
     db.refresh(db.task)
+
+    logger.add_debug("Task created, returning instance")
 
     return db.task
 
@@ -56,6 +65,8 @@ def add_response(db: Session, response: ResponseAdd, user_id: int) -> Optional[R
     :return: new response model
     :rtype: ResponseModel
     """
+    logger.add_debug("Adding response")
+
     db.response = ResponseModel(
         author_id=user_id,
         task_id=response.task_id,
@@ -66,6 +77,8 @@ def add_response(db: Session, response: ResponseAdd, user_id: int) -> Optional[R
     db.add(db.response)
     db.commit()
     db.refresh(db.response)
+
+    logger.add_debug("Response created, returning instance")
 
     return db.response
 
@@ -83,6 +96,8 @@ def confirm_response(db: Session, response: ResponseModel) -> bool:
     :return: response's is_confirmed attribute
     :rtype: bool
     """
+    logger.add_debug("Setting response is_confirmed as True")
+
     response.is_confirmed = True
     response.confirmed_at = datetime.datetime.now()
     db.commit()
@@ -103,6 +118,8 @@ def remove_task(db: Session, task: TaskModel) -> bool:
     :return: task's is_deleted attribute
     :rtype: bool
     """
+    logger.add_debug("Setting task is_deleted as True")
+
     task.is_deleted = True
     db.commit()
 
@@ -122,6 +139,8 @@ def remove_response(db: Session, response: ResponseModel) -> bool:
     :return: response's is_deleted attribute
     :rtype: bool
     """
+    logger.add_debug("Setting response is_deleted as True")
+
     response.is_deleted = True
     db.commit()
 
@@ -141,6 +160,8 @@ def get_task(db: Session, task_id: int) -> Optional[TaskModel]:
     :return: task model if such exists
     :rtype: TaskModel or None
     """
+    logger.add_debug("Getting task by id")
+
     return db.query(TaskModel).filter_by(id=task_id, is_deleted=False).first()
 
 
@@ -156,6 +177,8 @@ def get_user_tasks(db: Session, author_id: int):
 
     :return: list of task models.
     """
+    logger.add_debug("Getting tasks for user")
+
     return db.query(TaskModel).filter_by(author_id=author_id).all()
 
 
@@ -182,6 +205,8 @@ def get_response(db: Session,
     :return: response model if such exists
     :rtype: ResponseModel or None
     """
+    logger.add_debug(f"Getting response by {'response_id' if response_id is not None else 'task_id'}")
+
     if response_id is not None:
         return db.query(ResponseModel).filter_by(id=response_id).first()
     elif task_id is not None:

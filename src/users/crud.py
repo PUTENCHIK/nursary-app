@@ -3,10 +3,15 @@ from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
 from secrets import token_hex
 
+from src.dependencies import get_logger
+
 from src.users.models.User import User as UserModel
 from src.users.schemas.UserPassword import UserPassword
 from src.users.schemas.UserCreate import UserCreate
 from src.users.schemas.UserChange import UserChange
+
+
+logger = get_logger('users_crud')
 
 
 def create_user(db: Session, user: UserCreate) -> Optional[UserModel]:
@@ -20,8 +25,10 @@ def create_user(db: Session, user: UserCreate) -> Optional[UserModel]:
     :type user: UserCreate
 
     :return: user model from database
-    :rtype: UserModel or None
+    :rtype: UserModel
     """
+    logger.add_debug("Creating user")
+
     pwd = generate_password_hash(user.password)
 
     db.user = UserModel(
@@ -35,6 +42,8 @@ def create_user(db: Session, user: UserCreate) -> Optional[UserModel]:
     db.add(db.user)
     db.commit()
     db.refresh(db.user)
+
+    logger.add_debug("User created, returning instance")
 
     return db.user
 
@@ -52,6 +61,8 @@ def signin_user(user: UserPassword, user_db: UserModel) -> bool:
     :return: is gotten password equal user's password
     :rtype: bool
     """
+    logger.add_debug("Checking signin user")
+
     return check_password_hash(user_db.password, user.password)
 
 
@@ -68,6 +79,8 @@ def remove_user(db: Session, user: UserModel) -> bool:
     :return: true if record is marked as deleted
     :rtype: bool
     """
+    logger.add_debug("Setting user is_deleted as True")
+
     user.is_deleted = True
     db.commit()
 
@@ -90,6 +103,8 @@ def change_user_fields(db: Session, user: UserModel, new_fields: UserChange) -> 
     :return: user model from database
     :rtype: UserModel
     """
+    logger.add_debug("Changing user's fields")
+
     user.login = new_fields.new_login
     user.password = generate_password_hash(new_fields.new_password)
     db.commit()
@@ -116,6 +131,8 @@ def get_user(db: Session, id: int = None, login: str = None, token: str = None) 
     :return: user model from database if such exists
     :rtype: UserModel or None
     """
+    logger.add_debug(f"Getting user by {'id' if id is not None else ('login' if login is not None else 'token')}")
+
     db_user = None
     if id is not None:
         db_user = db.query(UserModel).filter_by(id=id, is_deleted=False).first()

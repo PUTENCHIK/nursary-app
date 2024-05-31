@@ -4,6 +4,8 @@ import random
 from sqlalchemy.orm import Session
 from typing import Optional
 
+from src.dependencies import get_logger
+
 from src.collars.models.Dog import Dog as DogModel
 from src.collars.models.Collar import Collar as CollarModel
 from src.collars.models.Exploit import Exploit
@@ -11,6 +13,9 @@ from src.collars.models.Exploit import Exploit
 from src.collars.schemas.DogAdd import DogAdd
 from src.collars.schemas.CollarAdd import CollarAdd
 from src.collars.schemas.Link import Link
+
+
+logger = get_logger('collars_crud')
 
 
 def add_dog(db: Session, dog: DogAdd) -> Optional[DogModel]:
@@ -26,6 +31,8 @@ def add_dog(db: Session, dog: DogAdd) -> Optional[DogModel]:
     :return: new dog model
     :rtype: DogModel or None
     """
+    logger.add_debug("Adding dog")
+
     db.dog = DogModel(
         name=dog.name,
         location=dog.location,
@@ -35,6 +42,8 @@ def add_dog(db: Session, dog: DogAdd) -> Optional[DogModel]:
     db.add(db.dog)
     db.commit()
     db.refresh(db.dog)
+
+    logger.add_debug("Dog added, returning instance")
 
     return db.dog
 
@@ -52,6 +61,8 @@ def add_collar(db: Session, collar: CollarAdd) -> Optional[CollarModel]:
     :return: new collar model
     :rtype: CollarModel or None
     """
+    logger.add_debug("Adding collar")
+
     db.collar = CollarModel(
         code=collar.code,
         is_deleted=False
@@ -60,6 +71,8 @@ def add_collar(db: Session, collar: CollarAdd) -> Optional[CollarModel]:
     db.add(db.collar)
     db.commit()
     db.refresh(db.collar)
+
+    logger.add_debug("Collar added, returning instance")
 
     return db.collar
 
@@ -77,6 +90,8 @@ def link(db: Session, link: Link) -> Optional[Exploit]:
     :return: new collar model
     :rtype: CollarModel or None
     """
+    logger.add_debug("Linking collar and dog")
+
     db.exploit = Exploit(
         collar_id=link.collar_id,
         dog_id=link.dog_id,
@@ -87,6 +102,8 @@ def link(db: Session, link: Link) -> Optional[Exploit]:
     db.add(db.exploit)
     db.commit()
     db.refresh(db.exploit)
+
+    logger.add_debug("Link created, returning instance")
 
     return db.exploit
 
@@ -104,6 +121,8 @@ def remove_dog(db: Session, dog: DogModel) -> bool:
     :return: dog's is_deleted attribute
     :rtype: bool
     """
+    logger.add_debug("Setting dog is_deleted as True")
+
     dog.is_deleted = True
     db.commit()
 
@@ -123,6 +142,8 @@ def remove_collar(db: Session, collar: CollarModel) -> bool:
     :return: collar's is_deleted attribute
     :rtype: bool
     """
+    logger.add_debug("Setting collar is_deleted as True")
+
     collar.is_deleted = True
     db.commit()
 
@@ -142,6 +163,7 @@ def unlink(db: Session, exploit: Exploit) -> bool:
     :return: true
     :rtype: bool
     """
+    logger.add_debug("Unlinking collar and dog")
 
     exploit.end_exploit = datetime.datetime.now()
     db.commit()
@@ -162,6 +184,8 @@ def get_dog(db: Session, id: int) -> Optional[DogModel]:
     :return: dog model from database if such exists
     :rtype: DogModel or None
     """
+    logger.add_debug("Getting dog by id")
+
     return db.query(DogModel).filter_by(id=id, is_deleted=False).first()
 
 
@@ -181,6 +205,8 @@ def get_collar(db: Session, id: int = None, code: str = None) -> Optional[Collar
     :return: collar model from database if such exists
     :rtype: CollarModel or None
     """
+    logger.add_debug(f"Getting collar by {'id' if id is not None else 'code'}")
+
     if id is not None:
         return db.query(CollarModel).filter_by(id=id, is_deleted=False).first()
     elif code is not None:
@@ -206,17 +232,23 @@ def get_exploit(db: Session, collar_id: int = None, dog_id: int = None) -> Optio
     db_exploit = None
 
     if collar_id is not None and dog_id is not None:
+        logger.add_debug("Getting exploit by collar's id and dog's id")
+
         db_exploit = db.query(Exploit).filter_by(
             collar_id=collar_id,
             dog_id=dog_id,
             end_exploit=None,
         ).first()
     elif collar_id is not None:
+        logger.add_debug("Getting exploit by collar's id")
+
         db_exploit = db.query(Exploit).filter_by(
             collar_id=collar_id,
             end_exploit=None,
         ).first()
     elif dog_id is not None:
+        logger.add_debug("Getting exploit by dog's id")
+
         db_exploit = db.query(Exploit).filter_by(
             dog_id=dog_id,
             end_exploit=None,
@@ -235,6 +267,8 @@ def get_random_coords(collar_code: str) -> tuple[float, float]:
     :return: tuple of 2 floats
     :rtype: tuple[float, float]
     """
+    logger.add_debug("Getting collar's coordinates")
+
     min_lat, max_lat = -90, 90
     min_lon, max_lon = -180, 180
 
