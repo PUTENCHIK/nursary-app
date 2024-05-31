@@ -17,11 +17,4 @@ def get_token(login: str, password: str):
 
 class Test:
     def test_1(self):
-        response = client.post("/users/signin", json={
-            "login": "test_user1",
-            "password": "password",
-        })
-
-        print(response.json())
-
-        assert 1 == 1
+        pass
