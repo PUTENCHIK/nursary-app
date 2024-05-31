@@ -90,19 +90,11 @@ async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session
 
     :raises UserException
     """
-    from src.tasks.router import get_tasks
-    from src.tasks.crud import is_task_active
 
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
         raise UserException.wrong_password(user.login.lower())
-
-    db_tasks = get_tasks(user_db.id, db)
-
-    for task in db_tasks:
-        if is_task_active(db, task):
-            raise UserException.has_active_tasks(user_db.id, task.id)
 
     return remove_db_user(db, user_db)
 
@@ -132,9 +124,12 @@ async def change_user(user: UserChange, db: DBSession = Depends(get_db_session))
 
 
 @users_router.get(f"{router_name}/get", response_model=User)
-def get_user(login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
+def get_user(id: int, login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
     """
     Finds user with gotten either login or token and return his model.
+
+    :param id: user's id
+    :type id: int
 
     :param login: user's login
     :type login: str or None
@@ -150,7 +145,7 @@ def get_user(login: str = None, token: str = None, db: DBSession = Depends(get_d
 
     :raises UserException
     """
-    db_user = get_db_user(db, login=login, token=token)
+    db_user = get_db_user(db, id=id, login=login, token=token)
 
     if db_user is None:
         raise UserException.no_user(login=login, token=token)
@@ -159,9 +154,12 @@ def get_user(login: str = None, token: str = None, db: DBSession = Depends(get_d
 
 
 @users_router.get(f"{router_name}/is_admin", response_model=bool)
-def is_user_admin(login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
+def is_user_admin(id: int, login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
     """
     Finds user with gotten either login or token and return true if he's admin.
+
+    :param id: user's id
+    :type id: int
 
     :param login: user's login
     :type login: str or None
@@ -177,7 +175,7 @@ def is_user_admin(login: str = None, token: str = None, db: DBSession = Depends(
 
     :raises UserException
     """
-    db_user = get_user(login, token, db)
+    db_user = get_user(id, login, token, db)
 
     if not db_user.is_admin:
         raise UserException.is_not_admin(login=login, token=token)

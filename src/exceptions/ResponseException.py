@@ -37,3 +37,10 @@ class ResponseException(MyHTTPException):
             code=404,
             detail=f"You can't remove not yours response with id '{response_id}'"
         )
+
+    @staticmethod
+    def author_task(task_id: int):
+        return ResponseException.http(
+            code=404,
+            detail=f"You can't add response to your own task with id '{task_id}'"
+        )

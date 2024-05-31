@@ -189,13 +189,3 @@ def get_response(db: Session,
             return db.query(ResponseModel).filter_by(task_id=task_id).first()
         else:
             return db.query(ResponseModel).filter_by(task_id=task_id, is_confirmed=is_confirmed).first()
-
-
-def get_confirmed_response(db: Session, task_id: int) -> Optional[ResponseModel]:
-    return db.query(ResponseModel).filter_by(task_id=task_id, is_confirmed=True).first()
-
-
-def is_task_active(db: Session, task: TaskModel) -> bool:
-    db_response = get_response(db, task_id=task.id, is_confirmed=True)
-
-    return db_response is not None

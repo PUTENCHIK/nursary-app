@@ -28,7 +28,6 @@ from src.tasks.crud import (
     get_task as get_db_task,
     get_user_tasks,
     get_response as get_db_response,
-    get_confirmed_response
 )
 
 tasks_router = APIRouter()
@@ -89,7 +88,10 @@ def add_response(response: ResponseAdd, user: UserAuth, db: DBSession = Depends(
     :raises ResponseException:
     """
     db_user = get_user(token=user.user_token, db=db)
-    get_task(response.task_id, db)
+    db_task = get_task(response.task_id, db)
+
+    if db_user.id == db_task.author_id:
+        raise ResponseException.author_task(db_task.id)
 
     return add_db_response(db, response, db_user.id)
 
@@ -123,7 +125,7 @@ def confirm_response(response: ResponseBase, user: UserAuth, db: DBSession = Dep
     if db_user.id != db_task.author_id:
         raise ResponseException.not_author(db_task.author_id, response.id, db_task.id)
 
-    db_confirmed = get_confirmed_response(db, db_task.id)
+    db_confirmed = get_db_response(db, task_id=db_task.id, is_confirmed=True)
     if db_confirmed is not None:
         if db_confirmed.id == response.id:
             raise ResponseException.already_confirmed(response.id)
