@@ -165,8 +165,8 @@ def get_user(id: int = None, login: str = None, token: str = None, db: DBSession
     db_user = get_db_user(db, id=id, login=login, token=token)
 
     if db_user is None:
-        logger.add_error(f"NoUser exception raised: login = '{login}', token='{token}'")
-        raise NoUser(login=login, token=token)
+        logger.add_error(f"NoUser exception raised: id = '{id}', login = '{login}', token='{token}'")
+        raise NoUser(id=id, login=login, token=token)
 
     return db_user
 
@@ -198,7 +198,7 @@ def is_user_admin(id: int = None, login: str = None, token: str = None, db: DBSe
     db_user = get_user(id, login, token, db)
 
     if not db_user.is_admin:
-        logger.add_error(f"IsNotAdmin exception raised: login = '{login}', token='{token}'")
-        raise IsNotAdmin(login=login, token=token)
+        logger.add_error(f"IsNotAdmin exception raised: id = '{id}', login = '{login}', token='{token}'")
+        raise IsNotAdmin(id=id, login=login, token=token)
 
     return True
