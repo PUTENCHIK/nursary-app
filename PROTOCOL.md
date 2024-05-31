@@ -117,7 +117,7 @@
 * Запрос
 ```
 {
-    code: "123abc456",
+    code: "123abc",
     user_token: "QWE123RTY"
 }
 ```
