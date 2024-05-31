@@ -3,7 +3,7 @@ import re
 from fastapi import APIRouter, Depends
 
 from src.database import DBSession
-from src.dependencies import get_db_session
+from src.dependencies import get_db_session, get_logger
 
 from src.exceptions.DogExceptions import *
 from src.exceptions.CollarExceptions import *
@@ -20,7 +20,6 @@ from src.collars.schemas.DogAdd import DogAdd
 from src.collars.schemas.Collar import Collar
 from src.collars.schemas.CollarBase import CollarBase
 from src.collars.schemas.CollarAdd import CollarAdd
-# from src.collars.schemas.CollarCoords import CollarCoords
 
 from src.collars.schemas.Link import Link
 from src.collars.schemas.Exploit import Exploit
@@ -41,6 +40,7 @@ from src.collars.crud import (
 
 collars_router = APIRouter()
 router_name = "/collars"
+logger = get_logger(router_name)
 
 
 @collars_router.post(f"{router_name}/add_dog", response_model=DogBase)
@@ -60,6 +60,8 @@ def add_dog(dog: DogAdd, user: UserAuth, db: DBSession = Depends(get_db_session)
     :return: id of new dog
     :rtype: DogBase
     """
+    logger.add_info(f"Called {router_name}/add_dog")
+
     if is_user_admin(token=user.user_token, db=db):
         db_dog = add_db_dog(db, dog)
         return db_dog
@@ -86,15 +88,20 @@ def add_collar(collar: CollarAdd, user: UserAuth, db: DBSession = Depends(get_db
     :raises WrongCode
     :raises CodeAlreadyAdded
     """
+    logger.add_info(f"Called {router_name}/add_collar")
+
     if is_user_admin(token=user.user_token, db=db):
         collar.code = collar.code.lower()
         if len(collar.code) != 6:
+            logger.add_error(f"WrongCodeLength exception raised")
             raise WrongCodeLength()
         if re.search(r'^([a-z0-9]{6})$', collar.code) is None:
+            logger.add_error(f"WrongCode exception raised")
             raise WrongCode()
 
         db_collar = get_db_collar(db, code=collar.code)
         if db_collar is not None:
+            logger.add_error(f"CodeAlreadyAdded exception raised: collar_code = '{collar.code}'")
             raise CodeAlreadyAdded(collar.code)
 
         return add_db_collar(db, collar)
@@ -122,20 +129,33 @@ async def link_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(ge
     :raises CollarAlreadyLinked
     :raises DogAlreadyLinked
     """
+    logger.add_info(f"Called {router_name}/link")
+
     if is_user_admin(token=user.user_token, db=db):
         get_dog(link.dog_id, db)
         get_collar(link.collar_id, db)
 
         db_exploit = get_db_exploit(db, link.collar_id, link.dog_id)
         if db_exploit is not None:
+            logger.add_error(
+                f"AlreadyLinked exception raised: collar_id = '{link.collar_id}', dog_id = '{link.dog_id}'"
+            )
             raise AlreadyLinked(link.collar_id, link.dog_id)
 
         db_collar_exploit = get_db_exploit(db, collar_id=link.collar_id)
         if db_collar_exploit is not None:
+            logger.add_error(
+                f"CollarAlreadyLinked exception raised: collar_id = '{db_collar_exploit.collar_id}', "
+                f"dog_id = '{db_collar_exploit.dog_id}'"
+            )
             raise CollarAlreadyLinked(db_collar_exploit.collar_id, db_collar_exploit.dog_id)
 
         db_dog_exploit = get_db_exploit(db, dog_id=link.dog_id)
         if db_dog_exploit is not None:
+            logger.add_error(
+                f"DogAlreadyLinked exception raised: collar_id = '{db_dog_exploit.dog_id}', "
+                f"dog_id = '{db_dog_exploit.collar_id}'"
+            )
             raise DogAlreadyLinked(db_dog_exploit.dog_id, db_dog_exploit.collar_id)
 
         add_link(db, link)
@@ -160,6 +180,8 @@ def remove_dog(dog: DogBase, user: UserAuth, db: DBSession = Depends(get_db_sess
     :return: true if dog was deleted
     :rtype: bool
     """
+    logger.add_info(f"Called {router_name}/remove_dog")
+
     if is_user_admin(token=user.user_token, db=db):
         db_dog = get_dog(dog.id, db)
 
@@ -188,6 +210,8 @@ def remove_collar(collar: CollarBase, user: UserAuth, db: DBSession = Depends(ge
     :return: true if collar was deleted
     :rtype: bool
     """
+    logger.add_info(f"Called {router_name}/remove_collar")
+
     if is_user_admin(token=user.user_token, db=db):
         db_collar = get_collar(collar.id, db)
 
@@ -217,12 +241,15 @@ def unlink_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(get_db
 
     :raises NoExploit
     """
+    logger.add_info(f"Called {router_name}/unlink")
+
     if is_user_admin(token=user.user_token, db=db):
         get_dog(link.dog_id, db)
         get_collar(link.collar_id, db)
 
         db_exploit = get_exploit(link.collar_id, link.dog_id, db)
         if db_exploit is None:
+            logger.add_error(f"NoExploit exception raised: collar_id = '{link.collar_id}', dog_id = '{link.dog_id}'")
             raise NoExploit(link.collar_id, link.dog_id)
 
         return remove_link(db, db_exploit)
@@ -244,9 +271,12 @@ def get_dog(dog_id: int, db: DBSession = Depends(get_db_session)):
 
     :raises NoDog
     """
+    logger.add_info(f"Called {router_name}/get_dog")
+
     db_dog = get_db_dog(db, dog_id)
 
     if db_dog is None:
+        logger.add_error(f"NoDog exception raised: id = '{dog_id}'")
         raise NoDog(id=dog_id)
 
     return db_dog
@@ -268,9 +298,12 @@ def get_collar(collar_id: int, db: DBSession = Depends(get_db_session)):
 
     :raises NoCollar
     """
+    logger.add_info(f"Called {router_name}/get_collar")
+
     db_collar = get_db_collar(db, collar_id)
 
     if db_collar is None:
+        logger.add_error(f"NoCollar exception raised: id = '{collar_id}'")
         raise NoCollar(id=collar_id)
 
     return db_collar
@@ -292,9 +325,12 @@ def get_coords(collar_id: int, db: DBSession = Depends(get_db_session)):
 
     :raises ImpossibleGetCoordinates
     """
+    logger.add_info(f"Called {router_name}/get_coords")
+
     db_collar = get_collar(collar_id, db)
     db_exploit = get_exploit(collar_id=collar_id, db=db)
     if db_exploit is None:
+        logger.add_error(f"ImpossibleGetCoordinates exception raised: collar_id = '{collar_id}'")
         raise ImpossibleGetCoordinates(collar_id)
 
     coords = get_random_coords(db_collar.code)
@@ -325,12 +361,16 @@ def get_exploit(collar_id: int = None, dog_id: int = None, db: DBSession = Depen
     :raises NoBothIds
     :raises NoExploit
     """
+    logger.add_info(f"Called {router_name}/get_link")
+
     if collar_id is None and dog_id is None:
+        logger.add_error(f"NoBothIds exception raised")
         raise NoBothIds()
 
     db_exploit = get_db_exploit(db, collar_id, dog_id)
 
     if db_exploit is None:
+        logger.add_error(f"NoExploit exception raised: collar_id = '{collar_id}', dog_id = '{dog_id}'")
         raise NoExploit(collar_id, dog_id)
 
     return db_exploit

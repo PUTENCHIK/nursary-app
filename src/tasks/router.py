@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from src.database import DBSession
-from src.dependencies import get_db_session
+from src.dependencies import get_db_session, get_logger
 
 from src.exceptions.TaskExceptions import *
 from src.exceptions.ResponseExceptions import *
@@ -32,6 +32,7 @@ from src.tasks.crud import (
 
 tasks_router = APIRouter()
 router_name = "/tasks"
+logger = get_logger(router_name)
 
 
 @tasks_router.post(f"{router_name}/add_task", response_model=TaskBase)
@@ -54,13 +55,17 @@ def add_task(task: TaskAdd, user: UserAuth, db: DBSession = Depends(get_db_sessi
     :raises UnlinkedCollar
     :raises TooShortText
     """
+    logger.add_info(f"Called {router_name}/add_task")
+
     db_user = get_user(token=user.user_token, db=db)
     db_exploit = get_exploit(db, collar_id=task.collar_id)
 
     if db_exploit is None:
+        logger.add_error(f"UnlinkedCollar exception raised: collar_id = '{task.collar_id}'")
         raise UnlinkedCollar(task.collar_id)
 
     if len(task.text) < 11:
+        logger.add_error(f"TooShortText exception raised")
         raise TooShortText()
 
     return add_db_task(db, task, db_user.id)
@@ -85,10 +90,13 @@ def add_response(response: ResponseAdd, user: UserAuth, db: DBSession = Depends(
 
     :raises UserIsAuthorOfTask
     """
+    logger.add_info(f"Called {router_name}/add_response")
+
     db_user = get_user(token=user.user_token, db=db)
     db_task = get_task(response.task_id, db)
 
     if db_user.id == db_task.author_id:
+        logger.add_error(f"UserIsAuthorOfTask exception raised: task_id = '{db_task.id}'")
         raise UserIsAuthorOfTask(db_task.id)
 
     return add_db_response(db, response, db_user.id)
@@ -116,18 +124,30 @@ def confirm_response(response: ResponseBase, user: UserAuth, db: DBSession = Dep
     :raises ResponseAlreadyConfirmed
     :raises TaskHasConfirmedResponse
     """
+    logger.add_info(f"Called {router_name}/confirm_response")
+
     db_user = get_user(token=user.user_token, db=db)
     db_response = get_response(response.id, db)
     db_task = get_task(db_response.task_id, db)
 
     if db_user.id != db_task.author_id:
+        logger.add_error(
+            f"UserIsNotAuthor exception raised: author_id = '{db_task.author_id}', "
+            f"response_id = '{response.id}', "
+            f"task_id = '{db_task.id}'"
+        )
         raise UserIsNotAuthor(db_task.author_id, response.id, db_task.id)
 
     db_confirmed = get_db_response(db, task_id=db_task.id, is_confirmed=True)
     if db_confirmed is not None:
         if db_confirmed.id == response.id:
+            logger.add_error(f"ResponseAlreadyConfirmed exception raised: response_id = '{response.id}'")
             raise ResponseAlreadyConfirmed(response.id)
         else:
+            logger.add_error(
+                f"TaskHasConfirmedResponse exception raised: task_id = '{db_task.id}', "
+                f"response_id = '{db_confirmed.id}'"
+            )
             raise TaskHasConfirmedResponse(db_task.id, db_confirmed.id)
 
     return confirm_db_response(db, db_response)
@@ -153,14 +173,18 @@ def remove_task(task: TaskBase, user: UserAuth, db: DBSession = Depends(get_db_s
     :raises NotUsersTask
     :raises TaskHasResponses
     """
+    logger.add_info(f"Called {router_name}/remove_task")
+
     db_user = get_user(token=user.user_token, db=db)
     db_task = get_task(task.id, db)
 
     if db_user.id != db_task.author_id:
+        logger.add_error(f"NotUsersTask exception raised: task_id = '{task.id}'")
         raise NotUsersTask(task.id)
 
     db_response = get_db_response(db, task_id=task.id)
     if db_response is not None:
+        logger.add_error(f"TaskHasResponses exception raised: task_id = '{task.id}'")
         raise TaskHasResponses(task.id)
 
     return remove_db_task(db, db_task)
@@ -169,26 +193,29 @@ def remove_task(task: TaskBase, user: UserAuth, db: DBSession = Depends(get_db_s
 @tasks_router.post(f"{router_name}/remove_response", response_model=bool)
 def remove_response(response: ResponseBase, user: UserAuth, db: DBSession = Depends(get_db_session)):
     """
-        If response exists and user is creator of response, response will be noted as deleted.
+    If response exists and user is creator of response, response will be noted as deleted.
 
-        :param response: schema with response's id
-        :type response: ResponseBase
+    :param response: schema with response's id
+    :type response: ResponseBase
 
-        :param user: schema which contains user's token for authentication
-        :type user: UserAuth
+    :param user: schema which contains user's token for authentication
+    :type user: UserAuth
 
-        :param db: session for connecting to db
-        :type db: sessionmaker
+    :param db: session for connecting to db
+    :type db: sessionmaker
 
-        :return: true if response was deleted
-        :rtype: bool
+    :return: true if response was deleted
+    :rtype: bool
 
-        :raises NotUsersResponse
-        """
+    :raises NotUsersResponse
+    """
+    logger.add_info(f"Called {router_name}/remove_response")
+
     db_user = get_user(token=user.user_token, db=db)
     db_response = get_response(response.id, db)
 
     if db_user.id != db_response.author_id:
+        logger.add_error(f"NotUsersResponse exception raised: response_id = '{response.id}'")
         raise NotUsersResponse(response.id)
 
     return remove_db_response(db, db_response)
@@ -210,9 +237,12 @@ def get_task(task_id: int, db: DBSession = Depends(get_db_session)):
 
     :raises NoTask
     """
+    logger.add_info(f"Called {router_name}/get_task")
+
     db_task = get_db_task(db, task_id)
 
     if db_task is None:
+        logger.add_error(f"NoTask exception raised: task_id = '{task_id}'")
         raise NoTask(task_id)
 
     return db_task
@@ -232,6 +262,8 @@ def get_tasks(author_id: int, db: DBSession = Depends(get_db_session)):
     :return: list of schemas class Task
     :rtype: list[Task]
     """
+    logger.add_info(f"Called {router_name}/get_tasks")
+
     return get_user_tasks(db, author_id)
 
 
@@ -251,9 +283,12 @@ def get_response(response_id: int, db: DBSession = Depends(get_db_session)):
 
     :raises NoResponse
     """
+    logger.add_info(f"Called {router_name}/get_response")
+
     db_response = get_db_response(db, response_id=response_id)
 
     if db_response is None:
+        logger.add_error(f"NoResponse exception raised: response_id = '{response_id}'")
         raise NoResponse(response_id)
 
     return db_response

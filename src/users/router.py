@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 
+from src.database import DBSession
+from src.dependencies import get_db_session, get_logger
+
 from src.exceptions.UserExceptions import *
 
-from src.database import DBSession
-from src.dependencies import get_db_session
 from src.users.schemas.User import User
 from src.users.schemas.UserToken import UserToken
 from src.users.schemas.UserCreate import UserCreate
@@ -20,6 +21,7 @@ from src.users.crud import (
 
 users_router = APIRouter()
 router_name = "/users"
+logger = get_logger(router_name)
 
 
 @users_router.post(f"{router_name}/signup", response_model=UserToken)
@@ -42,10 +44,14 @@ async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session))
     """
     from src.secret import check_admin_token
 
+    logger.add_info(f"Called {router_name}/signup")
+
     if get_db_user(db, login=user.login.lower()):
+        logger.add_error(f"UserAlreadyExists exception raised: login = '{user.login.lower()}'")
         raise UserAlreadyExists(user.login.lower())
 
     if user.is_admin and not check_admin_token(user.admin_token):
+        logger.add_error(f"WrongAdminToken exception raised: token = '{user.admin_token}'")
         raise WrongAdminToken(user.admin_token)
 
     return create_db_user(db, user)
@@ -67,9 +73,12 @@ async def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session
 
     :raises WrongPassword
     """
+    logger.add_info(f"Called {router_name}/signin")
+
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
+        logger.add_error(f"WrongPassword exception raised: login = '{user.login.lower()}'")
         raise WrongPassword(user.login.lower())
 
     return user_db
@@ -91,10 +100,12 @@ async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session
 
     :raises WrongPassword
     """
+    logger.add_info(f"Called {router_name}/remove")
 
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
+        logger.add_error(f"WrongPassword exception raised: login = '{user.login.lower()}'")
         raise WrongPassword(user.login.lower())
 
     return remove_db_user(db, user_db)
@@ -116,9 +127,12 @@ async def change_user(user: UserChange, db: DBSession = Depends(get_db_session))
 
     :raises WrongPassword
     """
+    logger.add_info(f"Called {router_name}/change")
+
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
+        logger.add_error(f"WrongPassword exception raised: login = '{user.login.lower()}'")
         raise WrongPassword(user.login.lower())
 
     return change_user_fields(db, user_db, user)
@@ -130,7 +144,7 @@ def get_user(id: int = None, login: str = None, token: str = None, db: DBSession
     Finds user with gotten either login or token and return his model.
 
     :param id: user's id
-    :type id: int
+    :type id: int or None
 
     :param login: user's login
     :type login: str or None
@@ -146,16 +160,19 @@ def get_user(id: int = None, login: str = None, token: str = None, db: DBSession
 
     :raises NoUser
     """
+    logger.add_info(f"Called {router_name}/get")
+
     db_user = get_db_user(db, id=id, login=login, token=token)
 
     if db_user is None:
+        logger.add_error(f"NoUser exception raised: login = '{login}', token='{token}'")
         raise NoUser(login=login, token=token)
 
     return db_user
 
 
 @users_router.get(f"{router_name}/is_admin", response_model=bool)
-def is_user_admin(id: int, login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
+def is_user_admin(id: int = None, login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
     """
     Finds user with gotten either login or token and return true if he's admin.
 
@@ -176,9 +193,12 @@ def is_user_admin(id: int, login: str = None, token: str = None, db: DBSession =
 
     :raises IsNotAdmin
     """
+    logger.add_info(f"Called {router_name}/is_admin")
+
     db_user = get_user(id, login, token, db)
 
     if not db_user.is_admin:
+        logger.add_error(f"IsNotAdmin exception raised: login = '{login}', token='{token}'")
         raise IsNotAdmin(login=login, token=token)
 
     return True
