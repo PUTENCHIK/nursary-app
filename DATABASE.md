@@ -20,7 +20,7 @@ users(
 ```sql
 collars(
     id INT unsigned not null auto_increment primary key,        -- уникальное id ошейника
-    code VARCHAR(255)                                           -- заводской код ошейника
+    code VARCHAR(6) not null unique                             -- заводской код ошейника
     is_deleted BOOLEAN not null default 0                       -- мягкое удаление записи из БД
 )
 ```
