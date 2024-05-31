@@ -1,9 +1,12 @@
-import pytest
+from fastapi.testclient import TestClient
+
+from main import app
 
 
-class TestLogin:
-    pass
+client = TestClient(app)
 
 
-class TestSignup:
-    pass
+def test_root():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json == {"message": "Hello on nursery-app!"}
