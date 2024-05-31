@@ -20,12 +20,28 @@ class WrongPassword(MyHTTPException):
 
 
 class NoUser(MyHTTPException):
-    def __init__(self, login: str = None, token: str = None):
-        detail = f"No user with {'login' if token is None else 'token'} '{login if token is None else token}'"
+    def __init__(self, id: int = None, login: str = None, token: str = None):
+        detail = "No user with "
+        if id is not None:
+            detail += f"id = '{id}'"
+        elif login is not None:
+            detail += f"login = '{login}'"
+        else:
+            detail += f"token = '{token}'"
+
         super(NoUser, self).__init__(detail)
 
 
 class IsNotAdmin(MyHTTPException):
-    def __init__(self, login: str = None, token: str = None):
-        detail = f"User with {'login' if token is None else 'token'} '{login if token is None else token}' isn't admin"
+    def __init__(self, id: int = None, login: str = None, token: str = None):
+        detail = f"User with "
+        if id is not None:
+            detail += f"id '{id}'"
+        elif login is not None:
+            detail += f"login '{login}'"
+        else:
+            detail += f"token '{token}'"
+
+        detail += " isn't admin"
+
         super(IsNotAdmin, self).__init__(detail)
