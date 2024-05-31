@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends
 from src.database import DBSession
 from src.dependencies import get_db_session
 
-from src.exceptions.TaskException import TaskException
-from src.exceptions.ResponseException import ResponseException
+from src.exceptions.TaskExceptions import *
+from src.exceptions.ResponseExceptions import *
 
 from src.users.router import get_user
 from src.users.schemas.UserAuth import UserAuth
@@ -51,17 +51,17 @@ def add_task(task: TaskAdd, user: UserAuth, db: DBSession = Depends(get_db_sessi
     :return: id of new task
     :rtype: TaskBase
 
-    :raises UserException:
-    :raises TaskException:
+    :raises UnlinkedCollar
+    :raises TooShortText
     """
     db_user = get_user(token=user.user_token, db=db)
     db_exploit = get_exploit(db, collar_id=task.collar_id)
 
     if db_exploit is None:
-        raise TaskException.unlinked_collar(task.collar_id)
+        raise UnlinkedCollar(task.collar_id)
 
     if len(task.text) < 11:
-        raise TaskException.too_short_text()
+        raise TooShortText()
 
     return add_db_task(db, task, db_user.id)
 
@@ -83,15 +83,13 @@ def add_response(response: ResponseAdd, user: UserAuth, db: DBSession = Depends(
     :return: id of new response
     :rtype: ResponseBase
 
-    :raises UserException:
-    :raises TaskException:
-    :raises ResponseException:
+    :raises UserIsAuthorOfTask
     """
     db_user = get_user(token=user.user_token, db=db)
     db_task = get_task(response.task_id, db)
 
     if db_user.id == db_task.author_id:
-        raise ResponseException.author_task(db_task.id)
+        raise UserIsAuthorOfTask(db_task.id)
 
     return add_db_response(db, response, db_user.id)
 
@@ -114,23 +112,23 @@ def confirm_response(response: ResponseBase, user: UserAuth, db: DBSession = Dep
     :return: true if response was confirmed
     :rtype: bool
 
-    :raises UserException:
-    :raises ResponseException:
-    :raises TaskException:
+    :raises UserIsNotAuthor
+    :raises ResponseAlreadyConfirmed
+    :raises TaskHasConfirmedResponse
     """
     db_user = get_user(token=user.user_token, db=db)
     db_response = get_response(response.id, db)
     db_task = get_task(db_response.task_id, db)
 
     if db_user.id != db_task.author_id:
-        raise ResponseException.not_author(db_task.author_id, response.id, db_task.id)
+        raise UserIsNotAuthor(db_task.author_id, response.id, db_task.id)
 
     db_confirmed = get_db_response(db, task_id=db_task.id, is_confirmed=True)
     if db_confirmed is not None:
         if db_confirmed.id == response.id:
-            raise ResponseException.already_confirmed(response.id)
+            raise ResponseAlreadyConfirmed(response.id)
         else:
-            raise ResponseException.cant_confirm(db_task.id, db_confirmed.id)
+            raise TaskHasConfirmedResponse(db_task.id, db_confirmed.id)
 
     return confirm_db_response(db, db_response)
 
@@ -152,18 +150,18 @@ def remove_task(task: TaskBase, user: UserAuth, db: DBSession = Depends(get_db_s
     :return: true if task was deleted
     :rtype: bool
 
-    :raises UserException:
-    :raises TaskException:
+    :raises NotUsersTask
+    :raises TaskHasResponses
     """
     db_user = get_user(token=user.user_token, db=db)
     db_task = get_task(task.id, db)
 
     if db_user.id != db_task.author_id:
-        raise TaskException.cant_remove(task.id)
+        raise NotUsersTask(task.id)
 
     db_response = get_db_response(db, task_id=task.id)
     if db_response is not None:
-        raise TaskException.has_responses(task.id)
+        raise TaskHasResponses(task.id)
 
     return remove_db_task(db, db_task)
 
@@ -185,14 +183,13 @@ def remove_response(response: ResponseBase, user: UserAuth, db: DBSession = Depe
         :return: true if response was deleted
         :rtype: bool
 
-        :raises UserException:
-        :raises ResponseException:
+        :raises NotUsersResponse
         """
     db_user = get_user(token=user.user_token, db=db)
     db_response = get_response(response.id, db)
 
     if db_user.id != db_response.author_id:
-        raise ResponseException.cant_remove(response.id)
+        raise NotUsersResponse(response.id)
 
     return remove_db_response(db, db_response)
 
@@ -210,11 +207,13 @@ def get_task(task_id: int, db: DBSession = Depends(get_db_session)):
 
     :return: task's schema with its data
     :rtype: Task
+
+    :raises NoTask
     """
     db_task = get_db_task(db, task_id)
 
     if db_task is None:
-        raise TaskException.no_task(task_id)
+        raise NoTask(task_id)
 
     return db_task
 
@@ -249,10 +248,12 @@ def get_response(response_id: int, db: DBSession = Depends(get_db_session)):
 
     :return: response's schema with its data
     :rtype: Response
+
+    :raises NoResponse
     """
     db_response = get_db_response(db, response_id=response_id)
 
     if db_response is None:
-        raise ResponseException.no_response(response_id)
+        raise NoResponse(response_id)
 
     return db_response

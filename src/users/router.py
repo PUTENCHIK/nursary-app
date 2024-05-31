@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from src.exceptions.UserException import UserException
+from src.exceptions.UserExceptions import *
 
 from src.database import DBSession
 from src.dependencies import get_db_session
@@ -37,15 +37,16 @@ async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session))
     :return: dict with new id, login, token and is_admin
     :rtype: dict
 
-    :raises UserException
+    :raises UserAlreadyExists
+    :raises WrongAdminToken
     """
     from src.secret import check_admin_token
 
     if get_db_user(db, login=user.login.lower()):
-        raise UserException.user_exists(user.login.lower())
+        raise UserAlreadyExists(user.login.lower())
 
     if user.is_admin and not check_admin_token(user.admin_token):
-        raise UserException.wrong_admin_token(user.admin_token)
+        raise WrongAdminToken(user.admin_token)
 
     return create_db_user(db, user)
 
@@ -64,12 +65,12 @@ async def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session
     :return: dict with id, login, token and is_admin
     :rtype: dict
 
-    :raises UserException
+    :raises WrongPassword
     """
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
-        raise UserException.wrong_password(user.login.lower())
+        raise WrongPassword(user.login.lower())
 
     return user_db
 
@@ -88,13 +89,13 @@ async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session
     :return: true if user is finally deleted
     :rtype: bool
 
-    :raises UserException
+    :raises WrongPassword
     """
 
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
-        raise UserException.wrong_password(user.login.lower())
+        raise WrongPassword(user.login.lower())
 
     return remove_db_user(db, user_db)
 
@@ -113,18 +114,18 @@ async def change_user(user: UserChange, db: DBSession = Depends(get_db_session))
     :return: dict with id, login, token and is_admin
     :rtype: dict
 
-    :raises UserException
+    :raises WrongPassword
     """
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
-        raise UserException.wrong_password(user.login.lower())
+        raise WrongPassword(user.login.lower())
 
     return change_user_fields(db, user_db, user)
 
 
 @users_router.get(f"{router_name}/get", response_model=User)
-def get_user(id: int, login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
+def get_user(id: int = None, login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
     """
     Finds user with gotten either login or token and return his model.
 
@@ -143,12 +144,12 @@ def get_user(id: int, login: str = None, token: str = None, db: DBSession = Depe
     :return: schema with user's id, login and is_admin
     :rtype: User
 
-    :raises UserException
+    :raises NoUser
     """
     db_user = get_db_user(db, id=id, login=login, token=token)
 
     if db_user is None:
-        raise UserException.no_user(login=login, token=token)
+        raise NoUser(login=login, token=token)
 
     return db_user
 
@@ -173,11 +174,11 @@ def is_user_admin(id: int, login: str = None, token: str = None, db: DBSession =
     :return: true if user is admin
     :rtype: bool
 
-    :raises UserException
+    :raises IsNotAdmin
     """
     db_user = get_user(id, login, token, db)
 
     if not db_user.is_admin:
-        raise UserException.is_not_admin(login=login, token=token)
+        raise IsNotAdmin(login=login, token=token)
 
     return True
