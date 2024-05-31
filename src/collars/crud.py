@@ -165,9 +165,9 @@ def get_dog(db: Session, id: int) -> Optional[DogModel]:
     return db.query(DogModel).filter_by(id=id, is_deleted=False).first()
 
 
-def get_collar(db: Session, id: int) -> Optional[CollarModel]:
+def get_collar(db: Session, id: int = None, code: str = None) -> Optional[CollarModel]:
     """
-    Returns database record from table 'records' with gotten id.
+    Returns database record from table 'records' with gotten either id or code.
 
     :param db: database session
     :type db: Session
@@ -175,10 +175,16 @@ def get_collar(db: Session, id: int) -> Optional[CollarModel]:
     :param id: collar's id
     :type id: int
 
+    :param code: collar's code
+    :type code: str
+
     :return: collar model from database if such exists
     :rtype: CollarModel or None
     """
-    return db.query(CollarModel).filter_by(id=id, is_deleted=False).first()
+    if id is not None:
+        return db.query(CollarModel).filter_by(id=id, is_deleted=False).first()
+    elif code is not None:
+        return db.query(CollarModel).filter_by(code=code, is_deleted=False).first()
 
 
 def get_exploit(db: Session, collar_id: int = None, dog_id: int = None) -> Optional[Exploit]:
