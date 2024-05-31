@@ -49,6 +49,9 @@ def add_task(task: TaskAdd, user: UserAuth, db: DBSession = Depends(get_db_sessi
     :param db: session for connecting to db
     :type db: sessionmaker
 
+    :return: id of new task
+    :rtype: TaskBase
+
     :raises UserException:
     :raises TaskException:
     """
@@ -78,6 +81,9 @@ def add_response(response: ResponseAdd, user: UserAuth, db: DBSession = Depends(
     :param db: session for connecting to db
     :type db: sessionmaker
 
+    :return: id of new response
+    :rtype: ResponseBase
+
     :raises UserException:
     :raises TaskException:
     :raises ResponseException:
@@ -102,6 +108,9 @@ def confirm_response(response: ResponseBase, user: UserAuth, db: DBSession = Dep
 
     :param db: session for connecting to db
     :type db: sessionmaker
+
+    :return: true if response was confirmed
+    :rtype: bool
 
     :raises UserException:
     :raises ResponseException:
@@ -138,6 +147,9 @@ def remove_task(task: TaskBase, user: UserAuth, db: DBSession = Depends(get_db_s
     :param db: session for connecting to db
     :type db: sessionmaker
 
+    :return: true if task was deleted
+    :rtype: bool
+
     :raises UserException:
     :raises TaskException:
     """
@@ -168,6 +180,9 @@ def remove_response(response: ResponseBase, user: UserAuth, db: DBSession = Depe
         :param db: session for connecting to db
         :type db: sessionmaker
 
+        :return: true if response was deleted
+        :rtype: bool
+
         :raises UserException:
         :raises ResponseException:
         """
@@ -182,6 +197,18 @@ def remove_response(response: ResponseBase, user: UserAuth, db: DBSession = Depe
 
 @tasks_router.get(f"{router_name}/get_task", response_model=Task)
 def get_task(task_id: int, db: DBSession = Depends(get_db_session)):
+    """
+    Gets database task with gotten id and if it isn't None, returns schema with id, collar's id and text of task.
+
+    :param task_id: task's id
+    :type: int
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: task's schema with its data
+    :rtype: Task
+    """
     db_task = get_db_task(db, task_id)
 
     if db_task is None:
@@ -192,11 +219,35 @@ def get_task(task_id: int, db: DBSession = Depends(get_db_session)):
 
 @tasks_router.get(f"{router_name}/get_tasks", response_model=list[Task])
 def get_tasks(author_id: int, db: DBSession = Depends(get_db_session)):
+    """
+    Returns list of user's tasks.
+
+    :param author_id: id of user who is creator of tasks
+    :type: int
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: list of schemas class Task
+    :rtype: list[Task]
+    """
     return get_user_tasks(db, author_id)
 
 
 @tasks_router.get(f"{router_name}/get_response", response_model=Response)
 def get_response(response_id: int, db: DBSession = Depends(get_db_session)):
+    """
+    Gets database response with gotten id and if it isn't None, returns schema with id, task's id and path of image.
+
+    :param response_id: response's id
+    :type: int
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: response's schema with its data
+    :rtype: Response
+    """
     db_response = get_db_response(db, response_id=response_id)
 
     if db_response is None:

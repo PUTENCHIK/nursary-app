@@ -24,6 +24,21 @@ router_name = "/users"
 
 @users_router.post(f"{router_name}/signup", response_model=UserToken)
 async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session)):
+    """
+    If gotten user's login is unique and admin token is valid (only if param is_admin is true), user will be added
+    into database.
+
+    :param user: schema with user's login, password, is_admin and extra param admin_token
+    :type user: UserCreate
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: dict with new id, login, token and is_admin
+    :rtype: dict
+
+    :raises UserException
+    """
     from src.secret import check_admin_token
 
     if get_db_user(db, login=user.login.lower()):
@@ -37,6 +52,20 @@ async def create_user(user: UserCreate, db: DBSession = Depends(get_db_session))
 
 @users_router.post(f"{router_name}/signin", response_model=UserToken)
 async def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+    """
+    Checks validity of gotten login and password. If they are valid, will return access token of user.
+
+    :param user: schema with login and password.
+    :type user: UserPassword
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: dict with id, login, token and is_admin
+    :rtype: dict
+
+    :raises UserException
+    """
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
@@ -47,6 +76,20 @@ async def signin_user(user: UserPassword, db: DBSession = Depends(get_db_session
 
 @users_router.post(f"{router_name}/remove", response_model=bool)
 async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session)):
+    """
+    Checks validity of gotten login and password. If they are valid, will mark record in db as deleted.
+
+    :param user: schema with login and password
+    :type user: UserPassword
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: true if user is finally deleted
+    :rtype: bool
+
+    :raises UserException
+    """
     from src.tasks.router import get_tasks
     from src.tasks.crud import is_task_active
 
@@ -66,6 +109,20 @@ async def remove_user(user: UserPassword, db: DBSession = Depends(get_db_session
 
 @users_router.post(f"{router_name}/change", response_model=UserToken)
 async def change_user(user: UserChange, db: DBSession = Depends(get_db_session)):
+    """
+    If gotten login and password are valid, they will be changed on gotten new login and password.
+
+    :param user: schema with login and password, new login and password
+    :type user: UserChange
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: dict with id, login, token and is_admin
+    :rtype: dict
+
+    :raises UserException
+    """
     user_db = get_user(login=user.login.lower(), db=db)
 
     if not signin_db_user(user, user_db):
@@ -76,6 +133,23 @@ async def change_user(user: UserChange, db: DBSession = Depends(get_db_session))
 
 @users_router.get(f"{router_name}/get", response_model=User)
 def get_user(login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
+    """
+    Finds user with gotten either login or token and return his model.
+
+    :param login: user's login
+    :type login: str or None
+
+    :param token: user's token
+    :type token: str or None
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: schema with user's id, login and is_admin
+    :rtype: User
+
+    :raises UserException
+    """
     db_user = get_db_user(db, login=login, token=token)
 
     if db_user is None:
@@ -86,6 +160,23 @@ def get_user(login: str = None, token: str = None, db: DBSession = Depends(get_d
 
 @users_router.get(f"{router_name}/is_admin", response_model=bool)
 def is_user_admin(login: str = None, token: str = None, db: DBSession = Depends(get_db_session)):
+    """
+    Finds user with gotten either login or token and return true if he's admin.
+
+    :param login: user's login
+    :type login: str or None
+
+    :param token: user's token
+    :type token: str or None
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: true if user is admin
+    :rtype: bool
+
+    :raises UserException
+    """
     db_user = get_user(login, token, db)
 
     if not db_user.is_admin:

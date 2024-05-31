@@ -20,7 +20,7 @@ from src.collars.schemas.DogAdd import DogAdd
 from src.collars.schemas.Collar import Collar
 from src.collars.schemas.CollarBase import CollarBase
 from src.collars.schemas.CollarAdd import CollarAdd
-from src.collars.schemas.CollarCoords import CollarCoords
+# from src.collars.schemas.CollarCoords import CollarCoords
 
 from src.collars.schemas.Link import Link
 from src.collars.schemas.Exploit import Exploit
@@ -45,6 +45,23 @@ router_name = "/collars"
 
 @collars_router.post(f"{router_name}/add_dog", response_model=DogBase)
 def add_dog(dog: DogAdd, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks user is admin and if he is, add new dog to database.
+
+    :param dog: schema with dog's name and description of its location
+    :type dog: DogAdd
+
+    :param user: schema with user's token
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: id of new dog
+    :rtype: DogBase
+
+    :raises UserException
+    """
     if is_user_admin(token=user.user_token, db=db):
         db_dog = add_db_dog(db, dog)
         return db_dog
@@ -52,6 +69,24 @@ def add_dog(dog: DogAdd, user: UserAuth, db: DBSession = Depends(get_db_session)
 
 @collars_router.post(f"{router_name}/add_collar", response_model=CollarBase)
 def add_collar(collar: CollarAdd, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks user is admin and if he is, add new collar to database.
+
+    :param collar: schema with collar's code
+    :type collar: CollarAdd
+
+    :param user: schema with user's token
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: id of new collar
+    :rtype: CollarBase
+
+    :raises UserException
+    :raises CollarException
+    """
     if is_user_admin(token=user.user_token, db=db):
         collar.code = collar.code.lower()
         if len(collar.code) != 6:
@@ -65,6 +100,27 @@ def add_collar(collar: CollarAdd, user: UserAuth, db: DBSession = Depends(get_db
 
 @collars_router.post(f"{router_name}/link", response_model=bool)
 async def link_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks user is admin and dog and collar with gotten ids exist and if they do, will be added exploit record with
+    date and time of creating.
+
+    :param link: schema with collar's id and dog's i
+    :type link: Link
+
+    :param user: schema with user's token
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: true if link was created
+    :rtype: bool
+
+    :raises UserException
+    :raises CollarException
+    :raises DogException
+    :raises ExploitException
+    """
     if is_user_admin(token=user.user_token, db=db):
         get_dog(link.dog_id, db)
         get_collar(link.collar_id, db)
@@ -87,6 +143,26 @@ async def link_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(ge
 
 @collars_router.post(f"{router_name}/remove_dog", response_model=bool)
 def remove_dog(dog: DogBase, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks user is admin and dog exists. Then marks record of dog as deleted. If dog uses any collar, their link will
+    be marked as ended.
+
+    :param dog: schema with dog's id
+    :type dog: DogBase
+
+    :param user: schema with user's token
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: true if dog was deleted
+    :rtype: bool
+
+    :raises UserException
+    :raises DogException
+    :raises ExploitException
+    """
     if is_user_admin(token=user.user_token, db=db):
         db_dog = get_dog(dog.id, db)
 
@@ -99,6 +175,26 @@ def remove_dog(dog: DogBase, user: UserAuth, db: DBSession = Depends(get_db_sess
 
 @collars_router.post(f"{router_name}/remove_collar", response_model=bool)
 def remove_collar(collar: CollarBase, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks user is admin and collar exists. Then marks record of collar as deleted. If collar is used by any dog, their
+    link will be marked as ended.
+
+    :param collar: schema with collar's id
+    :type collar: CollarBase
+
+    :param user: schema with user's token
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: true if collar was deleted
+    :rtype: bool
+
+    :raises UserException
+    :raises CollarException
+    :raises ExploitException
+    """
     if is_user_admin(token=user.user_token, db=db):
         db_collar = get_collar(collar.id, db)
 
@@ -111,6 +207,26 @@ def remove_collar(collar: CollarBase, user: UserAuth, db: DBSession = Depends(ge
 
 @collars_router.post(f"{router_name}/unlink", response_model=bool)
 def unlink_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(get_db_session)):
+    """
+    Checks dog, collar and link between them exist and user is admin. Then saves date and time of ending exploit.
+
+    :param link: schema with collar's id and dog's i
+    :type link: Link
+
+    :param user: schema with user's token
+    :type user: UserAuth
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: true if link was deleted
+    :rtype: bool
+
+    :raises UserException
+    :raises CollarException
+    :raises DogException
+    :raises ExploitException
+    """
     if is_user_admin(token=user.user_token, db=db):
         get_dog(link.dog_id, db)
         get_collar(link.collar_id, db)
@@ -124,6 +240,20 @@ def unlink_dog_collar(link: Link, user: UserAuth, db: DBSession = Depends(get_db
 
 @collars_router.get(f"{router_name}/get_dog", response_model=Dog)
 def get_dog(dog_id: int, db: DBSession = Depends(get_db_session)):
+    """
+    Returns database record from table 'dogs' with gotten id if such exists.
+
+    :param dog_id: dog's id
+    :type dog_id: int
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: schema with id, name and location of dog
+    :rtype: Dog or None
+
+    :raises DogException
+    """
     db_dog = get_db_dog(db, dog_id)
 
     if db_dog is None:
@@ -134,6 +264,20 @@ def get_dog(dog_id: int, db: DBSession = Depends(get_db_session)):
 
 @collars_router.get(f"{router_name}/get_collar", response_model=Collar)
 def get_collar(collar_id: int, db: DBSession = Depends(get_db_session)):
+    """
+    Returns database record from table 'collars' with gotten id if such exists.
+
+    :param collar_id: collar's id
+    :type collar_id: int
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: schema with id and code of collar
+    :rtype: Collar or None
+
+    :raises CollarException
+    """
     db_collar = get_db_collar(db, collar_id)
 
     if db_collar is None:
@@ -144,6 +288,21 @@ def get_collar(collar_id: int, db: DBSession = Depends(get_db_session)):
 
 @collars_router.get(f"{router_name}/get_coords")
 def get_coords(collar_id: int, db: DBSession = Depends(get_db_session)):
+    """
+    Checks collar exists, and it is used by any dog. Then imitates getting current coordinates of dog.
+
+    :param collar_id: collar's id
+    :type collar_id: int
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: dict with latitude and longitude of collar
+    :rtype: dict
+
+    :raises CollarException
+    :raises ExploitException
+    """
     db_collar = get_collar(collar_id, db)
     db_exploit = get_exploit(collar_id=collar_id, db=db)
     if db_exploit is None:
@@ -159,6 +318,23 @@ def get_coords(collar_id: int, db: DBSession = Depends(get_db_session)):
 
 @collars_router.get(f"{router_name}/get_link", response_model=Exploit)
 def get_exploit(collar_id: int = None, dog_id: int = None, db: DBSession = Depends(get_db_session)):
+    """
+    Returns database record from table 'exploits' with gotten id either dog or collar or both if such exists.
+
+    :param collar_id: collar's id
+    :type collar_id: int
+
+    :param dog_id: dog's id
+    :type dog_id: int
+
+    :param db: session for connecting to db
+    :type db: sessionmaker
+
+    :return: schema with collar's id, dog's id, date and time of start and end of exploit
+    :rtype: Exploit
+
+    :raises ExploitException
+    """
     if collar_id is None and dog_id is None:
         raise ExploitException.no_both_ids()
 
