@@ -10,6 +10,7 @@ from src.users.router import get_user
 from src.users.schemas.UserAuth import UserAuth
 
 from src.collars.crud import get_exploit
+from src.collars.router import get_collar
 
 from src.tasks.schemas.TaskBase import TaskBase
 from src.tasks.schemas.TaskAdd import TaskAdd
@@ -32,7 +33,7 @@ from src.tasks.crud import (
 
 tasks_router = APIRouter()
 router_name = "/tasks"
-logger = get_logger(router_name)
+logger = get_logger('tasks_router')
 
 
 @tasks_router.post(f"{router_name}/add_task", response_model=TaskBase)
@@ -58,6 +59,7 @@ def add_task(task: TaskAdd, user: UserAuth, db: DBSession = Depends(get_db_sessi
     logger.add_info(f"Called {router_name}/add_task")
 
     db_user = get_user(token=user.user_token, db=db)
+    get_collar(task.collar_id, db)
     db_exploit = get_exploit(db, collar_id=task.collar_id)
 
     if db_exploit is None:

@@ -21,7 +21,7 @@ from src.users.crud import (
 
 users_router = APIRouter()
 router_name = "/users"
-logger = get_logger(router_name)
+logger = get_logger('users_router')
 
 
 @users_router.post(f"{router_name}/signup", response_model=UserToken)

@@ -40,7 +40,7 @@ from src.collars.crud import (
 
 collars_router = APIRouter()
 router_name = "/collars"
-logger = get_logger(router_name)
+logger = get_logger('collars_router')
 
 
 @collars_router.post(f"{router_name}/add_dog", response_model=DogBase)
