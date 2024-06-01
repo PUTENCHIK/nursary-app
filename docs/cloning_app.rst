@@ -3,10 +3,7 @@
 =========================
 
 .. autosummary::
-   :toctree:
-       PROTOCOL
-       DATABASE
-       cloning_app.rst
+   :toctree: generated
 
 #. 
    Создание директории для проекта и виртуального окружения:
