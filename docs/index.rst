@@ -59,3 +59,9 @@ nursary-app - это простое Python-приложение, написан�
    DATABASE
    cloning_app
 
+Indices and tables
+------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
