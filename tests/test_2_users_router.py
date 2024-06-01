@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from nursaryapp.main import app
+from main import app
 
 
 client = TestClient(app)
