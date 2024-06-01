@@ -3,7 +3,10 @@
 ================================
 
 .. autosummary::
-   :toctree: generated
+   :toctree:
+       PROTOCOL
+       DATABASE
+       cloning_app.rst
 
 Таблицы
 -------

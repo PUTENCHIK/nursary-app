@@ -3,7 +3,10 @@
 ===============================
 
 .. autosummary::
-   :toctree: generated
+   :toctree:
+       PROTOCOL
+       DATABASE
+       cloning_app.rst
 
 users_router
 ------------
@@ -15,7 +18,7 @@ users_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        login: "user123",
@@ -23,7 +26,7 @@ users_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        id: 100,
@@ -43,7 +46,7 @@ users_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        login: "user123",
@@ -53,7 +56,7 @@ users_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        id: 100,
@@ -69,7 +72,7 @@ users_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        login: "user123",
@@ -77,7 +80,7 @@ users_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -90,7 +93,7 @@ users_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        login: "user123",
@@ -100,7 +103,7 @@ users_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        id: 101,
@@ -121,7 +124,7 @@ collars_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        name: "Ralfy",
@@ -130,7 +133,7 @@ collars_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        dog_id: 123
@@ -143,7 +146,7 @@ collars_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        code: "123abc",
@@ -151,7 +154,7 @@ collars_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        collar_id: 123
@@ -164,7 +167,7 @@ collars_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        collar_id: 123,
@@ -173,7 +176,7 @@ collars_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -186,7 +189,7 @@ collars_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        dog_id: 456,
@@ -194,7 +197,7 @@ collars_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -207,7 +210,7 @@ collars_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        collar_id: 456,
@@ -215,7 +218,7 @@ collars_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -228,7 +231,7 @@ collars_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        collar_id: 123,
@@ -237,7 +240,7 @@ collars_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -253,7 +256,7 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        collar_id: 321,
@@ -262,7 +265,7 @@ tasks_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        task_id: 201
@@ -275,7 +278,7 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        task_id: 321,
@@ -284,7 +287,7 @@ tasks_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        response_id: 201
@@ -297,7 +300,7 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        response_id: 321,
@@ -305,7 +308,7 @@ tasks_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -319,7 +322,7 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        task_id: 321,
@@ -327,7 +330,7 @@ tasks_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -340,7 +343,7 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        response_id: 321,
@@ -348,7 +351,7 @@ tasks_router
      }
 
 * Ответ
-  .. code-block:: console
+  .. code-block:: json
 
      {
        success: true
@@ -359,18 +362,16 @@ tasks_router
 
 ``/tasks/get_tasks``
 
-
 * Запрос
-  .. code-block:: console
+  .. code-block:: json
 
      {
        author_id: 1,
      }
 
-* 
-  Ответ
+* Ответ
 
-  .. code-block:: console
+  .. code-block:: json
 
      {
        [
