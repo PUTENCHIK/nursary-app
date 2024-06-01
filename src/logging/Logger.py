@@ -8,7 +8,7 @@ class Logger:
     FORMATTER_STRING = f"%(asctime)s — {socket.gethostbyname(socket.gethostname())} — %(name)s" \
                        f" — %(levelname)s — %(message)s"
     FORMATTER = logging.Formatter(FORMATTER_STRING)
-    LOG_FILE = "src/logs.log"
+    LOG_FILE = "logs.log"
 
     def __init__(self, name: str):
         logger = logging.getLogger(name)
