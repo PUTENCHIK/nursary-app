@@ -15,22 +15,22 @@ users_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       login: "user123",
-       password: "superuser"
-     }
+        {
+            login: "user123",
+            password: "superuser"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       id: 100,
-       login: "user123",
-       token: "abc123",
-       is_admin: false
-     }
+        {
+            id: 100,
+            login: "user123",
+            token: "abc123",
+            is_admin: false
+        }
 
 Регистрация новой учётной записи
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -43,24 +43,24 @@ users_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       login: "user123",
-       password: "superuser",
-       is_admin: true,
-       admin_token: "admin_token"
-     }
+        {
+            login: "user123",
+            password: "superuser",
+            is_admin: true,
+            admin_token: "admin_token"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       id: 100,
-       login: "user123",
-       token: "abc123",
-       is_admin: false
-     }
+        {
+            id: 100,
+            login: "user123",
+            token: "abc123",
+            is_admin: false
+        }
 
 Удаление учётной записи
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -69,19 +69,19 @@ users_router
 
 
 * Запрос
-  .. code-block:: json
+.. code-block:: json
 
-     {
-       login: "user123",
-       password: "superuser"
-     }
+    {
+        login: "user123",
+        password: "superuser"
+    }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 Изменение логина и/или пароля учётной записи
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -90,24 +90,24 @@ users_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       login: "user123",
-       password: "superuser",
-       new_login: "123user",
-       new_password: "password"
-     }
+        {
+            login: "user123",
+            password: "superuser",
+            new_login: "123user",
+            new_password: "password"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       id: 101,
-       login: "123user",
-       token: "def456",
-       is_admin: false
-     }
+        {
+            id: 101,
+            login: "123user",
+            token: "def456",
+            is_admin: false
+        }
 
 collars_router
 --------------
@@ -121,20 +121,20 @@ collars_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       name: "Ralfy",
-       location: "Irkutsk",
-       user_token: "QWE123RTY"
-     }
+        {
+            name: "Ralfy",
+            location: "Irkutsk",
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       dog_id: 123
-     }
+        {
+            dog_id: 123
+        }
 
 Добавление в БД нового ошейника
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -143,19 +143,19 @@ collars_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       code: "123abc",
-       user_token: "QWE123RTY"
-     }
+        {
+            code: "123abc",
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       collar_id: 123
-     }
+        {
+            collar_id: 123
+        }
 
 Привязка ошейника к определённой собаке
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -164,20 +164,20 @@ collars_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       collar_id: 123,
-       dog_id: 456,
-       user_token: "QWE123RTY"
-     }
+        {
+            collar_id: 123,
+            dog_id: 456,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 Удаление собаки из БД
 ^^^^^^^^^^^^^^^^^^^^^
@@ -186,19 +186,19 @@ collars_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       dog_id: 456,
-       user_token: "QWE123RTY"
-     }
+        {
+            dog_id: 456,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 Удаление ошейника из БД
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -207,19 +207,19 @@ collars_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       collar_id: 456,
-       user_token: "QWE123RTY"
-     }
+        {
+            collar_id: 456,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 Отвязка ошейника от определённой собаке
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -228,20 +228,20 @@ collars_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       collar_id: 123,
-       dog_id: 456,
-       user_token: "QWE123RTY"
-     }
+        {
+            collar_id: 123,
+            dog_id: 456,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 tasks_router
 ------------
@@ -253,20 +253,20 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       collar_id: 321,
-       text: "Всем привет, и сегодня вам нужно будет собаку!",
-       user_token: "QWE123RTY"
-     }
+        {
+            collar_id: 321,
+            text: "Всем привет, и сегодня вам нужно будет собаку!",
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       task_id: 201
-     }
+        {
+            task_id: 201
+        }
 
 Размещение отклика на задание
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -275,20 +275,20 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       task_id: 321,
-       image_path: https://host/images/answer.png,
-       user_token: "QWE123RTY"
-     }
+        {
+            task_id: 321,
+            image_path: https://host/images/answer.png,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       response_id: 201
-     }
+        {
+            response_id: 201
+        }
 
 Подтверждение автором задания отклика на это задание
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -297,19 +297,19 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       response_id: 321,
-       user_token: "QWE123RTY"
-     }
+        {
+            response_id: 321,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 Удаление задания
 ^^^^^^^^^^^^^^^^
@@ -319,19 +319,19 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       task_id: 321,
-       user_token: "QWE123RTY"
-     }
+        {
+            task_id: 321,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 Удаление отклика
 ^^^^^^^^^^^^^^^^
@@ -340,19 +340,19 @@ tasks_router
 
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       response_id: 321,
-       user_token: "QWE123RTY"
-     }
+        {
+            response_id: 321,
+            user_token: "QWE123RTY"
+        }
 
 * Ответ
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       success: true
-     }
+        {
+            success: true
+        }
 
 Получение заданий автора
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -360,28 +360,27 @@ tasks_router
 ``/tasks/get_tasks``
 
 * Запрос
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       author_id: 1,
-     }
+        {
+            author_id: 1,
+        }
 
 * Ответ
 
-  .. code-block:: json
+    .. code-block:: json
 
-     {
-       [
-           {
-               id: 2,
-               collar_id: 102,
-               text: "Помогите собаке!"
-           },
-
-           {
-               id: 4,
-               collar_id: 104,
-               text: "Покормите собаку!"
-           }
-       ]
-     }
+        {
+            [
+                {
+                    id: 2,
+                    collar_id: 102,
+                    text: "Помогите собаке!"
+                },
+                {
+                    id: 4,
+                    collar_id: 104,
+                    text: "Покормите собаку!"
+                }
+            ]
+        }
