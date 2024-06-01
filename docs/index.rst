@@ -52,8 +52,10 @@ nursary-app - это простое Python-приложение, написан�
 Файлы документации:
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
    PROTOCOL
    DATABASE
-   cloning_app.rst
+   cloning_app
 
