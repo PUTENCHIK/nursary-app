@@ -53,12 +53,12 @@
 
 
 * С помощью Python-скрипта:
-  .. code-block:: python
+    .. code-block:: python
 
-     python3 run.py
+        python3 run.py
 
 * Или используя uvicorn:
-  .. code-block:: bash
+    .. code-block:: bash
 
-     sudo apt install uvicorn
-     uvicorn main:app --reload --port 5000 --host 0.0.0.0
+        sudo apt install uvicorn
+        uvicorn main:app --reload --port 5000 --host 0.0.0.0
