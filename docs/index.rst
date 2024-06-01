@@ -53,8 +53,8 @@ nursary-app - это простое Python-приложение, написан�
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption:
 
    PROTOCOL
    DATABASE
